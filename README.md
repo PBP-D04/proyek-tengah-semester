@@ -22,9 +22,9 @@ Aplikasi “Bookphoria” berangkat dari kesadaran untuk meningkatkan pentingnya
 - **Account**
 
 Aplikasi Django ini mengatur autentikasi pengguna. Selain itu, juga memungkinkan untuk penggantian password dan pengeditan profil pengguna. Tidak hanya itu, di account, pengguna, dalam hal ini user, dapat melihat riwayat buku yang mereka sukai dan buku yang mereka review. Guest tidak dapat mengakses diarahkan langsung ke halaman login. Admin dapat mengakses halaman ini tetapi tidak memiliki fitur riwayat.
-- **Homepage**
+- **Books Pages**
 
-Aplikasi Django ini berfungsi untuk menampilkan halaman utama antarmuka dataset buku dalam web ini. pada antarmuka tersebut juga disediakan fitur sorting, filter, dan search. Selain itu, juga terdapat opsi untuk fitur carousel-slider untuk buku-buku yang direkomendasikan. Fitur sorting didasarkan pada pilihan paling banyak diulas, paling banyak disukai, terbaru, dan terlama. Sementara itu, fitur filter berupa pemfilteran berdasarkan kategori buku. 
+Aplikasi Django ini berfungsi untuk menampilkan halaman utama antarmuka dataset buku dalam web ini. pada antarmuka tersebut juga disediakan fitur sorting, filter, dan search. Selain itu, juga terdapat opsi untuk fitur carousel-slider untuk buku-buku yang direkomendasikan. Fitur sorting didasarkan pada pilihan paling banyak diulas, paling banyak disukai, terbaru, dan terlama. Sementara itu, fitur filter berupa pemfilteran berdasarkan kategori buku. Ada juga halaman untuk menampilkan semua dataset buku. 
 - **Dashboard App**
 
 Aplikasi Django ini berfungsi untuk menyediakan layanan DML atau lebih dikenal fitur CRUD (Create, Read, Update, Delete). Objek yang dapat di-CRUD adalah buku. Buku yang dapat di-CRUD oleh pengguna tergantung pada otorisasi penggunanya. User hanya bisa melakukan CRUD terhadap buku yang dimilikinya atau dengan kata lain di-filter berdasarkan foreign key yang merujuk pada primary key dari setiap User. Admin tidak dapat melakukan CRUD secara penuh, hanya dapat melakukan perintah DELETE dan READ. Untuk admin, tidak ada batasan filter. Sementara itu, guest tidak dapat mengakses page ini dan akan langsung diarahkan ke halaman login.
