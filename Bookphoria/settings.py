@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import pymysql
+pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -75,8 +77,12 @@ WSGI_APPLICATION = 'Bookphoria.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'Bookphoria_visitdirt',
+        'USER': 'Bookphoria_visitdirt',
+        'PASSWORD': '444f621c71997952280a8576b053230b73d87273',
+        'HOST': 'pvl.h.filess.io',
+        'PORT': '3307',
     }
 }
 
