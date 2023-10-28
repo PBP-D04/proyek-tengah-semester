@@ -9,6 +9,7 @@ var isBooksDropdownOpen = false;
 var isBooksDropdownMobileOpen = false;
 let startX = 0;
 let endX = 0;
+const NO_THUMBNAIL_URL = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/495px-No-Image-Placeholder.svg.png?20200912122019'
 const bookDropdownButton = document.querySelectorAll(".dropdown-button-xl");
 //document.getElementsByClassName()
 const bookDropdownContent = document.querySelectorAll(".books-dropdown-content");
