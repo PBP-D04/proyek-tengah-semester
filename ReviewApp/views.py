@@ -2,7 +2,7 @@ import datetime
 import json
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, HttpResponseNotFound
-from .models import Review
+from .models import Review, Book
 from .forms import ReviewForm
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
@@ -43,15 +43,15 @@ def get_review_json(request):
 @csrf_exempt
 @login_required(login_url='/login/')
 def create_review(request):
-    data = json.loads(request.body)
-    book = Book.objects.prefetch_related('authors', 'images', 'categories').get(pk=data['bookId'])
     if request.method == 'POST':
-        rate = request.POST.get("rate")
-        review = request.POST.get("review")
-        image = request.POST.get("image")
+        data = json.loads(request.body)
+        book = Book.objects.prefetch_related('authors', 'images', 'categories').get(pk=data['bookId'])
+        rating = data['rating']
+        content = data['content']
+        photo = data['photo']
         user = request.user
 
-        new_review = Review(rate=rate, review=review, image=image, user=user)
+        new_review = Review(book=book, rating=rating, content=content, photo=photo, user=user)
         new_review.save()
 
         return JsonResponse({"message": "Product created successfully."}, status=201)
