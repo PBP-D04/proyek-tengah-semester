@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
     <title>Profil Pengguna</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -97,6 +98,7 @@
             </div>
             <div class="col-md-6">
                 <h2 class="profile-header">Profil Pengguna</h2>
+
             </div>
         </div>
 
@@ -104,7 +106,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <p><strong>Nama:</strong> {{user.username}}</p>
-                    <p><strong>Gambar Profil:</strong> <img src="https://imgv3.fotor.com/images/slider-image/a-man-holding-a-camera-with-image-filter.jpg" width="100" height="100" alt="Gambar Profil"></p>
+                    <p><strong>Gambar Profil:</strong> <img src="{{ userProfile.profile_picture }}"></p>
                     <p><strong>Age:</strong> {{userProfile.age}}</p>
                     <p><strong>City:</strong> {{userProfile.city}}</p>
                     <p><strong>Country:</strong> {{userProfile.country}}</p>
