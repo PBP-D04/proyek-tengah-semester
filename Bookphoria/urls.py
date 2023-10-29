@@ -40,5 +40,5 @@ urlpatterns = [
     path('', include('Homepage.urls')),
     path('profile/', include('Dashboard.urls')),
     path('detail/', include('DetailBook.urls')), 
-    path('review/', include('ReviewApp.urls'))
+    path('review/', include('ReviewApp.urls')),
 ]

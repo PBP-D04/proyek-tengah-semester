@@ -97,7 +97,105 @@
       </div>
     </div>
   </div>
+
+
+<!-- REVIEW SECTION -->
+<!-- Reviews List Modal -->
+  <div class="modal fade" id="reviewsModal" tabindex="-1" aria-labelledby="reviewsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reviewsModalLabel">Reviews</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="reviews-container">
+            <!-- Daftar ulasan akan ditampilkan di sini -->
+            {% for review in reviews %}
+            <div class="review-heading">
+              <a class="text-capitalize"><i class="far fa-user mr-1"></i>{{review.user.username}}</a>
+              <a class="ml-2"><i class="far fa-clock mr-1"></i>{{review.date_added}}</a>
+              <i class="fa fa-star {% if review.rate > 4 %} checked {% endif %}" style="float: right;"></i>
+              <!-- ... (other stars) ... -->
+            </div>
+            <div class="review-body mt-2">
+              <p>{{review.review}}</p>
+              {% if review.image %}
+              <img src="{{ review.image.url }}" alt="Review Image" class="img-fluid mt-2">
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Form Modal -->
+  <div class="modal fade" id="reviewFormModal" tabindex="-1" aria-labelledby="reviewFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reviewFormModalLabel">Add New Review</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="review-form" onsubmit="return false;">
+            {% csrf_token %}
+            {% for book in books %}
+            <input type="hidden" name="book_id" id="book_id" value="{{book.id}}"/>
+            {% endfor %}
+            <div class="form-group">
+              <p class="text-uppercase font-weight-bold">Your Review: </p>
+              <textarea id="comment" class="input" type="text" name="review" placeholder="Type Your Review"></textarea>
+            </div>
+            <div class="form-group">
+              <p class="text-uppercase font-weight-bold">Upload Image: </p>
+              <input id="upload-image" type="file" name="image" accept="image/*">
+            </div>
+            <div class="form-group">
+              <div class="input-rate">
+                <p class="text-uppercase font-weight-bold">Your Rating: </p>
+                <div class="rate-wrapper">
+                  <input type="radio" id="star-1" name="rate" value="1">
+                  <label for="star-1"></label>
+                  <input type="radio" id="star-2" name="rate" value="2">
+                  <label for="star-2"></label>
+                  <input type="radio" id="star-3" name="rate" value="3">
+                  <label for="star-3"></label>
+                  <input type="radio" id="star-4" name="rate" value="4">
+                  <label for="star-4"></label>
+                  <input type="radio" id="star-5" name="rate" value="5">
+                  <label for="star-5"></label>
+                </div>
+              </div>
+            </div>
+            {% if user.is_authenticated %}
+            <button type="button" class="btn btn-secondary btn-md m-0" data-bs-dismiss="modal">Close</button>
+            <button id="post-btn" class="btn btn-danger btn-md m-0" type="submit">Add Review</button>
+            {% else %}
+            <p>You must be logged in to post a review, <a href="{ % url 'Bookphoria:login' %}">Login</a></p>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trigger buttons -->
+  <div class="container mt-5">
+    <h5 class="text-uppercase font-weight-bold">Reviews</h5>
+    <hr class="mt-0 pt-0">
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reviewFormModal">
+      Add Review by AJAX
+    </button>
+  </div>
+
 </div>
+
 
 <script>
   const bookEle = document.getElementById('bookId')
@@ -146,6 +244,84 @@
   }
   
   document.getElementById("button_add").onclick = addComment
+
+
+
+
+  async function getReview() {
+    return fetch("{% url 'ReviewApp:get_review_json' %}").then((res) => res.json())
+  }
+
+  async function refreshReviews() {
+    const reviewsContainer = document.getElementById("reviews-container");
+    reviewsContainer.innerHTML = "";
+
+    const reviews = await getReview()
+    reviews.forEach((review) => {
+      const reviewElement = document.createElement("div");
+      reviewElement.style.padding = "10px";
+      reviewElement.style.marginBottom = "10px";
+
+
+      const reviewText = document.createElement("p");
+      console.log(review.fields);
+      reviewsContainer.appendChild(reviewElement);
+
+    })
+
+    document.addEventListener("DOMContentLoaded", refreshReviews);
+  }
+
+  async function addReview() {
+    const bookId = bookEle.getAttribute("data-value")
+    console.log(bookEle.getAttribute("data-value"), "ini")
+    const review = document.getElementById("name").value
+    const res = await fetch ("/review/create-review/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({"review":review, "bookId":bookId})
+    })
+    const result = await res.json()
+    refreshReviews()
+    document.getElementById().reset("review-form");
+    return false;
+  }
+
+    // let data = {
+    //     'imageUrl': '',
+    //     'rate': 5,
+    //     'comment':''
+    // }
+    // const setData = async  () => {
+    //    const rateInput =  document.querySelector('input[name="rate"]:checked');
+    //    const comment = document.getElementById("comment");
+    //    if(rateInput.value){
+    //     data.rate = parseInt(rateInput.value)
+    //    }
+    //    data.comment = comment.value.trim()
+    //    const res = await uploadImageByElement('upload-image')
+    //    data.imageUrl = res
+       
+    // }
+    // const postBtn = document.getElementById('post-btn')
+    // postBtn.addEventListener('click', async ()=> {
+    //    await  setData()
+    //     const resjson = await fetch('/review/create-review/', {
+    //         method:'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify(data),
+    //     });
+    //     const res = await resjson.json()
+    //     console.log(res)
+
+    // })
+
+document.getElementById("post-btn").onclick = addReview
+
 </script>
 
 <style>
@@ -160,12 +336,129 @@
   
   .info-content {
     flex-grow: 1;
-    background-color: #F7F7F7; /* Warna backdrop */
+    background-color: #F7F7F7;
     padding: 5px;
     border-radius: 5px;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    overflow-x: auto;  /* Menambahkan scrollbar horizontal jika diperlukan */
+    overflow-x: auto;
+  }
+
+  .col-sm-5.mt-2 {
+    float: right;
+    margin-bottom: 10px;
+  }
+
+  .review-heading {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+
+  .review-heading a {
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  .review-body {
+    margin-top: 10px;
+  }
+
+  .review-body p {
+    line-height: 1.6;
+  }
+
+  .review-form {
+    background-color: #efefef;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  #comment {
+    width: 100%;
+    max-width: 730px;
+    height: 50px;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    resize: vertical;
+  }
+
+  #upload-image {
+    margin-bottom: 10px;
+  }
+
+  .mt-0.pt-0 {
+    border-top: 1px solid #460c90;
+  }
+
+
+  .input-rate {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .text-uppercase {
+    text-transform: uppercase;
+  }
+
+  .font-weight-bold {
+    font-weight: bold;
+  }
+
+  #post-btn {
+    background-color: #460c90;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  #post-btn:hover {
+    background-color: #2c075c;
+  }
+
+  .rate-wrapper {
+    display: flex;
+    align-items: center;
+    transform: rotateY(180deg);
+  }
+
+  .rate-wrapper input[type="radio"] {
+    display: none;
+  }
+
+  .rate-wrapper label {
+    display: block;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    background-color: rgb(148, 148, 148);
+    clip-path: polygon(50% 0%, 61.8% 35%, 98.4% 35%, 68.4% 57.5%, 79.4% 91%, 50% 70%, 20.6% 91%, 31.6% 57.5%, 1.6% 35%, 38.2% 35%);
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+
+  .rate-wrapper label:hover,
+  .rate-wrapper label:hover ~ label {
+    background-color: #460c90;
+  }
+
+  .rate-wrapper input[type="radio"]:checked ~ label {
+    background-color: rgb(255, 217, 0);
+  }
+
+  .rate-wrapper input[type="radio"]:checked ~ label:hover,
+  .rate-wrapper input[type="radio"]:checked ~ label:hover ~ label {
+    background-color: #460c90;
+  }
+
+  .form-group {
+    margin-bottom: 2px;
   }
 
 </style>

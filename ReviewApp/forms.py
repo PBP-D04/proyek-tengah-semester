@@ -4,4 +4,4 @@ from ReviewApp.models import Review
 class ReviewForm(ModelForm):
     class Meta:
         model = Review
-        exclude = ["date_added"]
+        fields = ['rate', 'review', 'image']
