@@ -1,5 +1,6 @@
 //let currentUser = {{user|default:"null"}}
 var currentBooks = [];
+let carouselBooks = [];
 const carousel = document.getElementById("carousel");
 const prevButton = document.getElementById("prev");
 const nextButton = document.getElementById("next");
@@ -11,8 +12,12 @@ const dropdownContent = document.getElementById("dropdownDelay");
 const dropdownButtonsContent = dropdownContent.querySelectorAll("button");
 const dropdownIcon = document.getElementById("homeDropdownIcon");
 const homeContent = document.getElementById("homeContent");
-let userData = homeContent.getAttribute("data-current-user");
-console.log(userData)
+
+let userId = document.getElementById('user-id').getAttribute('data-user-id');
+let username = document.getElementById('user-username').getAttribute('data-user-username');
+
+console.log(userId,username)
+
 const carouselButtonContainer = document.getElementById("carousel-button-container");
 const carouselContainer = document.getElementById("carousel-container");
 const topDivider = document.getElementById('top-divider');
@@ -434,6 +439,38 @@ function getRandomElementsFromArray(array, numElements) {
     return shuffledArray.slice(0, numElements); // Mengambil sejumlah elemen
   }
 
+const likeOrDislikeBook = async (idUser,bookId) => {
+    if(!idUser){
+        return
+    }
+    const url = '/like-book-json/'
+    console.log(userId,idUser,bookId)
+    data = {'userId': idUser, 'bookId':bookId}
+    const requestOptions = {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json', 
+            },
+            body: JSON.stringify(data), 
+        };
+    try {
+        const resJson = await fetch(url, requestOptions);
+        const res = await resJson.json()
+        if(res.book){
+            updateBooksState(res.book);
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const updateBooksState = (updatedBook) => {
+    const bookIndex = currentBooks.findIndex(book => book.id === updatedBook.id);
+    if(bookIndex != -1){
+        currentBooks[bookIndex] = updatedBook
+    }
+    setHomepageBooks(currentBooks)
+}
 
 const setCarouselBooks = (res) => {
     
@@ -467,7 +504,7 @@ const setCarouselBooks = (res) => {
                         </h1>
                     </div> 
                             <div class="ml-auto flex flex-col items-center justify-center">
-                                <div class=" fas fa-heart text-red-500 text-lg">
+                                <div class=" fas fa-heart ${book.likes.find((user)=> user.userId == userId)? 'text-red-500':'text-gray-300'} text-lg">
                                 </div>
                                 <h1 class="text-xs">1024</h1>
                             </div>
@@ -622,9 +659,9 @@ const setHomepageBooks = (prevRes) => {
                         </div>  
                                 
                                 <div class="ml-auto flex flex-col items-center justify-center">
-                                    <div class=" fas fa-heart text-red-500 text-lg">
+                                    <div onclick="likeOrDislikeBook(${userId},${book.id})" class="fas fa-heart ${book.likes.find((user)=> user.userId == userId)? 'text-red-500':'text-gray-300'} text-lg">
                                     </div>
-                                    <h1 class="text-xs">1024</h1>
+                                    <h1 class="text-xs">${book.likes.length}</h1>
                                 </div>
                             </div>
                             
