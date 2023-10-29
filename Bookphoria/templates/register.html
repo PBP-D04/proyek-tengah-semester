@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block meta %}
     <title>Register</title>
 {% endblock meta %}
@@ -17,9 +17,12 @@
                 <input type="text" name="fullname" class="form-control" placeholder="fullname">
             </div>
             <div class="form-group">
+                <label for="profile_picture">Gambar Profil:</label>
+                <input type="file" name="profile_picture" class="form-control" placeholder="profile_picture">
+            </div>
+            <div class="form-group">
                 <input type="age" name="age" class="form-control" placeholder="age">
             </div>
-        
         <div class="form-group">
             <input type="country" name="country" class="form-control" placeholder="country">
         </div>
@@ -100,11 +103,13 @@
         text-align: center;
     }
 </style>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     const redirect = () => {
         window.location.href = '/login/'
     }
+    const dataElement = document.UploadImageByElement('register-id')
     $(document).ready(function() {
         $('#register-form').submit(function(event) {
             event.preventDefault();
@@ -130,6 +135,10 @@
         });
     });
 </script>
+
+<script src="{% static 'js/profile.js' %}"></script>
+<script type="module" src="{% static 'js/firebase-upload.js' %}"></script> 
 </body>
 </html>
+
 {% endblock content %}

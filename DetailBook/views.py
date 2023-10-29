@@ -58,7 +58,7 @@ def get_books_json(request):
         book_list.append(book_data)
     return JsonResponse({'books': book_list})
 
-@login_required 
+@login_required(login_url='/login/') 
 def book_detail(request, id):
     book = Book.objects.prefetch_related('authors', 'images', 'categories').get(pk = id)
     book = {

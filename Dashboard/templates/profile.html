@@ -12,23 +12,23 @@
         <section id="homeContent" class="hidden mt-16 md:mt-20 mx-12 flex md:flex-row md:flex-row flex-col flex-row gap-10">
             <div class="md:w-1/3 w-full flex flex-col items-center">
                 <img
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJ03Q9ChkabFQ9M3syb-NEQOk9x34zv4pfFQ&usqp=CAU"
+                    src="{{ user.profile_picture }}"
                     class="rounded-full mb-4"
                  />
-                <h2 class="text-xl font-bold">{{ user }}</h2>
-                <h2 class="text-xl mb-4 opacity-50">Suisei Hoshimachi</h2>
+                <h2 class="text-xl font-bold">{{ user.username }}</h2>
+                <h2 class="text-xl mb-4 opacity-50">{{ user.fullname }}</h2>
                 <h3 class="texl-xl font-bold mb-4">
-                    {{ user }}'s Books
+                    {{ user.username }}'s Books
                 </h3>
                 <div id="book-list" class="flex w-full h-32 gap-5 overflow-x-auto items-center align-middle justify-center">
-                    <!-- <img src="https://hololive.hololivepro.com/wp-content/uploads/2022/04/%E3%82%A2%E3%83%A1%E3%83%AA%E3%82%A2.png"/>
-                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2023/01/Takanashi-Kiara_thumb.png"/>
-                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2022/04/%E3%81%84%E3%81%AA%E3%81%AB%E3%81%99.png"/>
-                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2022/04/%E3%81%90%E3%82%89.png"/>
-                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2022/04/%E3%82%A2%E3%83%A1%E3%83%AA%E3%82%A2.png"/>
-                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2023/10/IRyS_list_thumb.png"/>
-                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2023/07/Nerissa-Ravencroft_list_thumb.png"/>
-                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2023/02/FriendA_thumb.png"/> -->
+                    <!-- <img src="https://hololive.hololivepro.com/wp-content/uploads/2022/04/%E3%82%A2%E3%83%A1%E3%83%AA%E3%82%A2.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2023/01/Takanashi-Kiara_thumb.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2022/04/%E3%81%84%E3%81%AA%E3%81%AB%E3%81%99.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2022/04/%E3%81%90%E3%82%89.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2022/04/%E3%82%A2%E3%83%A1%E3%83%AA%E3%82%A2.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2023/10/IRyS_list_thumb.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2023/07/Nerissa-Ravencroft_list_thumb.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2023/02/FriendA_thumb.png" class="h-full w-auto object-contain shadow-xl""/> -->
                 </div>
                 <button data-modal-target="add-book-modal" data-modal-toggle="add-book-modal" type="button" class="mt-4 w-full py-2 bg-violet-950 hover:bg-indigo-950 text-white rounded-xl" data-bs-toggle="modal" data-bs-target="#exampleModal">Add More Book</button>
             </div>

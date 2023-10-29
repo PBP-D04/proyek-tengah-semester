@@ -1,4 +1,5 @@
 import datetime
+from django import forms
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -6,7 +7,7 @@ from django.http import HttpResponseRedirect
 #from Bookphoria.forms import ReviewForm
 from django.http import HttpResponse
 from django.core import serializers
-from django.urls import reverse
+from django.urls import path, reverse
 #from Bookphoria.models import EditProfileForm, Review, UserProfile, UserProfileForm
 from Bookphoria.models import EditProfileForm, UserProfile, UserProfileForm
 from django.contrib import messages
@@ -20,6 +21,7 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 from ReviewApp.models import Review # connect to ReviewApp
+from django.core.files.storage import default_storage
 
 
 import json
@@ -29,9 +31,11 @@ from Homepage.models import Book
 
 def register(request):
     form = UserProfileForm()
+    profile_picture = forms.ImageField(required=False)
     if request.method == "POST":
         username= request.POST['username']
         fullname = request.POST['fullname']
+        profile_picture= request.POST['profile_picture']
         age =int(request.POST['age'])
         country = request.POST['country']
         city = request.POST['city']
@@ -43,7 +47,12 @@ def register(request):
             return form
         user = User.objects.create_user(username=username, password=password1)
         user.save()
-        user_profile = UserProfile(user=user,fullname = fullname, username=username, age=age, country=country, city=city, phone_number=phone_number, password= password1)
+        if 'profile_picture' in request.FILES:
+                print('found it')
+                user.profile_picture= request.FILES['profile_picture']
+        user.save()
+        registered = True
+        user_profile = UserProfile(user=user,fullname = fullname,profile_picture=profile_picture, username=username, age=age, country=country, city=city, phone_number=phone_number, password= password1)
         user_profile.save() 
         messages.success(request, 'Your account has been successfully created!')
         return redirect('/login')
@@ -85,7 +94,7 @@ def create_profile(request):
         form = UserProfileForm()
     return render(request, 'user.html', {'form': form})
 
-@login_required
+@login_required(login_url='/login/')
 def view_profile(request):
     user = request.user
     userProfile = UserProfile.objects.get(user=user)

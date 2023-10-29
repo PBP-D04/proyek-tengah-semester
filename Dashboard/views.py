@@ -3,12 +3,13 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from Bookphoria.models import UserProfile
 from Dashboard.forms import BookForm
 from Homepage.models import Book, Author, Category
 #from Bookphoria.models import Review
 from ReviewApp.models import Review
 
-@login_required
+@login_required(login_url='/login/')
 def get_profile(request):
     form = BookForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
@@ -16,6 +17,7 @@ def get_profile(request):
         return HttpResponseRedirect(reverse('Dashboard:get-profile'))
     books = Book.objects.prefetch_related('authors', 'images', 'categories').all()
     book_list = []
+    user = UserProfile.objects.get(user=request.user)
     for book in books:
         book_data  = {
             'title': book.title,
@@ -46,9 +48,60 @@ def get_profile(request):
         # print(book_list)
     context = {
         'books':book_list,
-        'form': form
+        'form': form,
+        'user': user
     }
     return render(request, 'profile.html', context)
+
+def visit_profile(request, username):
+    form = BookForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        add_book(request)
+        return HttpResponseRedirect(reverse('Dashboard:get-profile'))
+    try:
+        user = UserProfile.objects.get(username=username)
+    except UserProfile.DoesNotExist:
+        return render(request, 'user-not-exist.html')
+    books = Book.objects.prefetch_related('authors', 'images', 'categories').all()
+    book_list = []
+    user = UserProfile.objects.get(username=username)
+    print("=====================================")
+    print(user)
+    print("=====================================")
+    for book in books:
+        book_data  = {
+            'title': book.title,
+            'subtitle': book.subtitle,
+            'description': book.description,
+            'authors': [author.name for author in book.authors.all()],
+            'publisher': book.publisher,
+            'published_date': book.published_date.strftime('%Y-%m-%d') if book.published_date else None,
+            'language': book.language,
+            'currencyCode': book.currencyCode,
+            'is_ebook': book.is_ebook,
+            'pdf_available': book.pdf_available,
+            'pdf_link': book.pdf_link,
+            'thumbnail': book.thumbnail,
+            'categories': [category.name for category in book.categories.all()],
+            'images':[imageUrl.url for imageUrl in book.images.all()],
+            'price': book.price,
+            'saleability': book.saleability,
+            'buy_link': book.buy_link,
+            'epub_available': book.epub_available,
+            'epub_link': book.epub_link,
+            'maturity_rating': book.maturity_rating,
+            'page_count': book.page_count,
+            'user_publish_time': book.user_publish_time
+        }
+        book_list.append(book.thumbnail)
+        # print(book.thumbnail)
+        # print(book_list)
+    context = {
+        'books':book_list,
+        'form': form,
+        'user': user
+    }
+    return render(request, 'visit-profile.html', context)
 
 @csrf_exempt
 def add_book(request):

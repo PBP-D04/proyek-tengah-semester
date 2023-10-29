@@ -1,0 +1,108 @@
+{% extends 'base-tailwind.html' %}
+{% load static %}
+{% block meta %}
+    <title>Bookphoria</title>
+{% endblock meta %}
+
+{% block content %}
+    
+    {% include 'partials/navbar.html' %}
+    {% include "partials/sidebar.html"  %}
+    {% include "partials/loading-text.html"  %}\
+        <section id="homeContent" class="hidden mt-16 md:mt-20 mx-12 flex md:flex-row md:flex-row flex-col flex-row gap-10">
+            <div class="md:w-1/3 w-full flex flex-col items-center">
+                <img
+                    src="{{ user.profile_picture }}"
+                    class="rounded-full mb-4"
+                 />
+                <h2 class="text-xl font-bold">{{ user.username }}</h2>
+                <h2 class="text-xl mb-4 opacity-50">{{ user.fullname }}</h2>
+                <h3 class="texl-xl font-bold mb-4">
+                    {{ user.username }}'s Books
+                </h3>
+                <div id="book-list" class="flex w-full h-32 gap-5 overflow-x-auto items-center align-middle justify-center">
+                    <!-- <img src="https://hololive.hololivepro.com/wp-content/uploads/2022/04/%E3%82%A2%E3%83%A1%E3%83%AA%E3%82%A2.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2023/01/Takanashi-Kiara_thumb.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2022/04/%E3%81%84%E3%81%AA%E3%81%AB%E3%81%99.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2022/04/%E3%81%90%E3%82%89.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2022/04/%E3%82%A2%E3%83%A1%E3%83%AA%E3%82%A2.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2023/10/IRyS_list_thumb.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2023/07/Nerissa-Ravencroft_list_thumb.png" class="h-full w-auto object-contain shadow-xl""/>
+                    <img src="https://hololive.hololivepro.com/wp-content/uploads/2023/02/FriendA_thumb.png" class="h-full w-auto object-contain shadow-xl""/> -->
+                </div>
+            </div>
+            <div class="w-full md:mb-0 mb-16">
+                <h3 class="texl-xl font-bold mb-4">
+                    Recent Reviews
+                </h3>
+                <div id="review-list" class="h-[75vh] w-full overflow-y-auto flex flex-col gap-3">
+                    <!-- <div class="border-2 rounded-xl p-2 shadow-lg flex gap-6 max-h-32">
+                        <img src="https://images.goodsmile.info/cgm/images/product/20230703/14604/117609/large/9672319311faf53ec723ee366bc4346c.jpg" class="h-full aspect-square object-cover shadow-xl rounded-xl"/>
+                        <div>
+                            <h4 class="font-extrabold">Spy x Family Season 2</h4>
+                            <i class="fa-solid fa-star"> 4.5</i>
+                            <br class="mb-4"/>
+                            SUISEI NO GOTOKU ARAWARETA SUTAA NO GENSEKI! AIDORU VTUBER NO HOSHIMACHI SEUISEI DESU! SUI-CHAN WA--? KYOU MO KAWAII!
+                        </div>
+                    </div>
+                    <div class="border-2 rounded-xl p-2 shadow-lg flex gap-6 max-h-32">
+                        <img src="https://m.media-amazon.com/images/I/51PCNNihXeL._AC_UF894,1000_QL80_.jpg" class="h-full aspect-square object-cover shadow-xl rounded-xl"/>
+                        <div>
+                            <h4 class="font-extrabold">Spy x Family Season 2</h4>
+                            <i class="fa-solid fa-star"> 4.5</i>
+                            <br class="mb-4"/>
+                            SUISEI NO GOTOKU ARAWARETA SUTAA NO GENSEKI! AIDORU VTUBER NO HOSHIMACHI SEUISEI DESU! SUI-CHAN WA--? KYOU MO KAWAII!
+                        </div>
+                    </div>
+                    <div class="border-2 rounded-xl p-2 shadow-lg flex gap-6 max-h-32">
+                        <img src="https://cdn.kyou.id/items/197241-nendoroid-shishiro-botan-hololive-production.jpg.webp" class="h-full aspect-square object-cover shadow-xl rounded-xl"/>
+                        <div>
+                            <h4 class="font-extrabold">Spy x Family Season 2</h4>
+                            <i class="fa-solid fa-star"> 4.5</i>
+                            <br class="mb-4"/>
+                            SUISEI NO GOTOKU ARAWARETA SUTAA NO GENSEKI! AIDORU VTUBER NO HOSHIMACHI SEUISEI DESU! SUI-CHAN WA--? KYOU MO KAWAII!
+                        </div>
+                    </div>
+                    <div class="border-2 rounded-xl p-2 shadow-lg flex gap-6 max-h-32">
+                        <img src="https://cdn.kyou.id/items/244714-nendoroid-amane-kanata-hololive-production.jpg.webp" class="h-full aspect-square object-cover shadow-xl rounded-xl"/>
+                        <div>
+                            <h4 class="font-extrabold">Spy x Family Season 2</h4>
+                            <i class="fa-solid fa-star"> 4.5</i>
+                            <br class="mb-4"/>
+                            SUISEI NO GOTOKU ARAWARETA SUTAA NO GENSEKI! AIDORU VTUBER NO HOSHIMACHI SEUISEI DESU! SUI-CHAN WA--? KYOU MO KAWAII!
+                        </div>
+                    </div>
+                    <div class="border-2 rounded-xl p-2 shadow-lg flex gap-6 max-h-32">
+                        <img src="https://cdn.kyou.id/items/184581-nendoroid-enrico-pucci-jojos-bizzare-adventure.jpg.webp" class="h-full aspect-square object-cover shadow-xl rounded-xl"/>
+                        <div>
+                            <h4 class="font-extrabold">Spy x Family Season 2</h4>
+                            <i class="fa-solid fa-star"> 4.5</i>
+                            <br class="mb-4"/>
+                            SUISEI NO GOTOKU ARAWARETA SUTAA NO GENSEKI! AIDORU VTUBER NO HOSHIMACHI SEUISEI DESU! SUI-CHAN WA--? KYOU MO KAWAII!
+                        </div>
+                    </div>
+                    <div class="border-2 rounded-xl p-2 shadow-lg flex gap-6 max-h-32">
+                        <img src="https://cdn.kyou.id/items/121739-nendoroid-dio-brando-jojos-bizzare-adventure-stardust-crusader-re-release.jpg.webp" class="h-full aspect-square object-cover shadow-xl rounded-xl"/>
+                        <div>
+                            <h4 class="font-extrabold">Spy x Family Season 2</h4>
+                            <i class="fa-solid fa-star"> 4.5</i>
+                            <br class="mb-4"/>
+                            SUISEI NO GOTOKU ARAWARETA SUTAA NO GENSEKI! AIDORU VTUBER NO HOSHIMACHI SEUISEI DESU! SUI-CHAN WA--? KYOU MO KAWAII!
+                        </div>
+                    </div>
+                    <div class="border-2 rounded-xl p-2 shadow-lg flex gap-6 max-h-32">
+                        <img src="https://cdn.kyou.id/items/241881-nendoroid-hayase-yuuka-blue-archive.jpg.webp" class="h-full aspect-square object-cover shadow-xl rounded-xl"/>
+                        <div>
+                            <h4 class="font-extrabold">Spy x Family Season 2</h4>
+                            <i class="fa-solid fa-star"> 4.5</i>
+                            <br class="mb-4"/>
+                            SUISEI NO GOTOKU ARAWARETA SUTAA NO GENSEKI! AIDORU VTUBER NO HOSHIMACHI SEUISEI DESU! SUI-CHAN WA--? KYOU MO KAWAII!
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </section>
+    <script src="{% static 'js/profile.js' %}"></script>
+    <script type="module" src="{% static 'js/firebase-upload.js' %}"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+{% endblock content %}
