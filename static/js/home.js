@@ -486,9 +486,9 @@ const setCarouselBooks = (res) => {
                         <div  class="mt-1 text-[#C52A62] text-xs line-clamp-2">
                         ${book.categories.length > 0 ? book.categories.map((category,index)=>{
                             if(index == book.categories.length - 1){
-                                return `<a href="/" >${category}</a><span>.</span>`
+                                return `<a class="hover:underline" href="/search-books/${category}" >${category}</a><span>.</span>`
                             }
-                            return `<a>${category}</a><span>, </span>`
+                            return `<a class="hover:underline" href="/search-books/${category}">${category}</a><span>, </span>`
                         }) : 'No categories'}
                         </div>
                         <div  class=" text-black text-xs md:text-sm line-clamp-2 md:line-clamp-4">
@@ -642,9 +642,9 @@ const setHomepageBooks = (prevRes) => {
                             <div  class="mt-1 text-gray-400 text-xs line-clamp-2">
                                 ${book.categories.length > 0 ? book.categories.map((category,index)=>{
                                     if(index == book.categories.length - 1){
-                                        return `<a>${category}</a><span>.</span>`
+                                        return `<a class="hover:underline" href="/search-books/${category}">${category}</a><span>.</span>`
                                     }
-                                    return `<a>${category}</a><span>, </span>`
+                                    return `<a class="hover:underline" href="/search-books/${category}">${category}</a><span>, </span>`
                                 }) : 'No categories'}
                             </div>
                             <div  class="mt-2 text-[#C52A62] font-bold text-sm line-clamp-2">
