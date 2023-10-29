@@ -9,7 +9,7 @@
     {% include 'partials/navbar.html' %}
     {% include "partials/sidebar.html"  %}
     {% include "partials/loading-text.html"  %}
-        <div id="homeContent" class="hidden w-screen max-w-[96vw] min-h-screen  flex flex-col pt-12 md:pt-16 items-center max-w-[1240px] mx-auto">
+        <div id="homeContent" data-current-user="{{ user|default:'null' }}" class="hidden w-screen max-w-[96vw] min-h-screen  flex flex-col pt-12 md:pt-16 items-center max-w-[1240px] mx-auto">
             {% include "partials/home-carousel.html"  %}
             <div class="flex mb-2 mt-4 justify-between  items-center w-full px-2">
                 <h1 class="text-lg font-bold">Koleksi Buku</h1>

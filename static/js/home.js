@@ -1,3 +1,4 @@
+//let currentUser = {{user|default:"null"}}
 var currentBooks = [];
 const carousel = document.getElementById("carousel");
 const prevButton = document.getElementById("prev");
@@ -10,6 +11,8 @@ const dropdownContent = document.getElementById("dropdownDelay");
 const dropdownButtonsContent = dropdownContent.querySelectorAll("button");
 const dropdownIcon = document.getElementById("homeDropdownIcon");
 const homeContent = document.getElementById("homeContent");
+let userData = homeContent.getAttribute("data-current-user");
+console.log(userData)
 const carouselButtonContainer = document.getElementById("carousel-button-container");
 const carouselContainer = document.getElementById("carousel-container");
 const topDivider = document.getElementById('top-divider');
@@ -430,6 +433,7 @@ function getRandomElementsFromArray(array, numElements) {
     const shuffledArray = newArray.sort(() => 0.5 - Math.random()); // Mengacak urutan array
     return shuffledArray.slice(0, numElements); // Mengambil sejumlah elemen
   }
+
 
 const setCarouselBooks = (res) => {
     

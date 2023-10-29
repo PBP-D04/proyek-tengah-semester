@@ -47,6 +47,7 @@ class Book(models.Model):
     )
     user_publish_time = models.DateTimeField(blank=True, null=True, default= timezone.now)
     user_last_edit_time = models.DateTimeField(blank=True, null=True)
+    likes = models.ManyToManyField(User, related_name='likes_book')
 
     def __str__(self):
         return self.title

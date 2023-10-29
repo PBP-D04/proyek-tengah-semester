@@ -69,11 +69,11 @@ def advanced_search(request):
     return JsonResponse({'books': book_list})
 
 def home(request):
-    print(request.user.is_authenticated)
+    #print(request.user.is_authenticated)
     context = {
-        
+        'user': request.user
     }
-    return render(request, "home.html")
+    return render(request, "home.html", context)
 
 def all_books_page(request):
     return render(request, "allbooks-page.html")
@@ -177,10 +177,11 @@ def search_books_json_category(request, category):
 
 @csrf_exempt
 def get_books_json(request):
-    books = Book.objects.prefetch_related('authors', 'images', 'categories').select_related('user__auth_user').all()
+    books = Book.objects.prefetch_related('authors', 'images', 'categories', 'likes__auth_user').select_related('user__auth_user').all()
     book_list = []
     for book in books:
         book_data  = {
+            'likes':  [{'username': userprofile.username, 'userId': userprofile.user.pk} for userprofile in book.likes.all()],
             'fullname':book.user.auth_user.fullname,
             'username':book.user.auth_user.username,
             'id': book.pk,
