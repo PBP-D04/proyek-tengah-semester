@@ -72,16 +72,33 @@ def advanced_search(request):
 def home(request):
     #print(request.user.is_authenticated)
     user = request.user if request.user.is_authenticated else None
+    profile = None
+    if user:
+        profile = UserProfile.objects.get(user=user)
     context = {
         'user': {
             'id': user.id if user else None,
             'username': user.username if user else None,
+            'is_authenticated': True if user else False,
+            'profile': profile
         }
     }
     return render(request, "home.html", context)
 
 def all_books_page(request):
-    return render(request, "allbooks-page.html")
+    user = request.user if request.user.is_authenticated else None
+    profile = None
+    if user:
+        profile = UserProfile.objects.get(user=user)
+    context = {
+        'user': {
+            'id': user.id if user else None,
+            'username': user.username if user else None,
+            'is_authenticated': True if user else False,
+            'profile': profile
+        }
+    }
+    return render(request, "allbooks-page.html", context)
 
 @csrf_exempt
 def get_categories(request):

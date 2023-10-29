@@ -13,7 +13,7 @@ const dropdownButtonsContent = dropdownContent.querySelectorAll("button");
 const dropdownIcon = document.getElementById("homeDropdownIcon");
 const homeContent = document.getElementById("homeContent");
 
-let userId = document.getElementById('user-id').getAttribute('data-user-id');
+let userId = document.getElementById('user-id').getAttribute('data-user-id')??'';
 let username = document.getElementById('user-username').getAttribute('data-user-username');
 
 console.log(userId,username)
@@ -34,10 +34,10 @@ let sCurrentSearchCategory = 'All'
 let mode = (width) => width < 768 ? 'MOBILE' : width < 1024? 'MEDIUM' : 'LARGE';
 let prevWidth = window.innerWidth;
 
-const pcSearchInput = document.getElementById('pc-search-input');
-const pcSearchAnswerBtn = document.getElementById('pc-search-answer');
-const mobileSearchInput = document.getElementById('mobile-search-input');
-const mobileSearchAnswerBtn = document.getElementById('mobile-search-answer');
+let pcSearchInput = document.getElementById('pc-search-input');
+let pcSearchAnswerBtn = document.getElementById('pc-search-answer');
+let mobileSearchInput = document.getElementById('mobile-search-input');
+let mobileSearchAnswerBtn = document.getElementById('mobile-search-answer');
 let searchText = '';
 mobileSearchInput.addEventListener('input', (event) => {
     searchText = event.target.value;
@@ -213,6 +213,9 @@ const openSearchDropdown = () => {
 
 // tutup
 const closeSearchDropdown = () => {
+    if(searchDropdownContent.length == 0){
+        return
+    }
     console.log('INFOKAN KETERTUTUPAN')
     const currentMode = mode(window.innerWidth)
     if(currentMode == 'MOBILE' || currentMode == 'MEDIUM'){
@@ -240,30 +243,30 @@ const setMode = () => {
         isSearchDropdownMobileOpen = false;
     }
 }
-window.addEventListener('resize',setMode)
+//window.addEventListener('resize',setMode)
 
-window.addEventListener('click', (event)=> {
-    console.log('ADA YANG TERCLICK')
-    const currentWidth = window.innerWidth;
-    const currentMode = mode(currentWidth)
-    if(currentMode == 'MOBILE' || currentMode =='MEDIUM'){
-        console.log('MOBILE TERCLICK')
-        if(! searchDropdownButton[1].contains(event.target)){
-            console.log('MAAF AKU INTERUPSI!!!')
-            return closeSearchDropdown()
-        }
-        if( searchDropdownButton[1].contains(event.target)){
-            console.log('TERCLICK YOIIII')
-        }
+//window.addEventListener('click', (event)=> {
+  //  console.log('ADA YANG TERCLICK')
+    //const currentWidth = window.innerWidth;
+    //const currentMode = mode(currentWidth)
+    //if(currentMode == 'MOBILE' || currentMode =='MEDIUM'){
+      //  console.log('MOBILE TERCLICK')
+        //if(! searchDropdownButton[1].contains(event.target)){
+         //   console.log('MAAF AKU INTERUPSI!!!')
+           // return closeSearchDropdown()
+       // }
+        //if( searchDropdownButton[1].contains(event.target)){
+          //  console.log('TERCLICK YOIIII')
+      //  }
         
-    }
-    else{
-        console.log('PC TERCLICK')
-        if(! searchDropdownButton[0].contains(event.target)){
-            return closeSearchDropdown();
-        }
-    }
-});
+    //}
+    //else{
+       // console.log('PC TERCLICK')
+      //  if(! searchDropdownButton[0].contains(event.target)){
+         //   return closeSearchDropdown();
+    //    }
+  //  }
+//});
 
 const sortCategory = (books) => {
     categoryMap = new Map()
@@ -439,8 +442,21 @@ function getRandomElementsFromArray(array, numElements) {
     return shuffledArray.slice(0, numElements); // Mengambil sejumlah elemen
   }
 
+  const showError = (message) => {
+    return Toastify({
+        text: message,
+        duration: 3000, // Durasi tampilan toast (dalam milidetik)
+        style: {
+          background: 'red', // Warna latar belakang untuk pesan sukses
+          color: 'white', // Warna teks untuk pesan sukses
+        },
+        close:true
+      }).showToast();
+}
+
 const likeOrDislikeBook = async (idUser,bookId) => {
-    if(!idUser){
+    if(idUser == ''){
+        showError('Anda belum Login. Mohon Login dulu')
         return
     }
     const url = '/like-book-json/'
@@ -466,14 +482,19 @@ const likeOrDislikeBook = async (idUser,bookId) => {
 
 const updateBooksState = (updatedBook) => {
     const bookIndex = currentBooks.findIndex(book => book.id === updatedBook.id);
+    const carouselIndex = carouselBooks.findIndex(book=> book.id === updatedBook.id )
     if(bookIndex != -1){
         currentBooks[bookIndex] = updatedBook
     }
+    if(carouselIndex!= -1){
+        carouselBooks[carouselIndex] = updatedBook
+    }
     setHomepageBooks(currentBooks)
+    setCarouselBooks(carouselBooks)
 }
 
 const setCarouselBooks = (res) => {
-    
+    carouselBooks = res
     const carousel = document.getElementById('carousel');
     let booksString = '';
     try {
@@ -504,9 +525,9 @@ const setCarouselBooks = (res) => {
                         </h1>
                     </div> 
                             <div class="ml-auto flex flex-col items-center justify-center">
-                                <div class=" fas fa-heart ${book.likes.find((user)=> user.userId == userId)? 'text-red-500':'text-gray-300'} text-lg">
+                                <div onclick="likeOrDislikeBook(${userId},${book.id})" class=" fas fa-heart ${book.likes.find((user)=> user.userId == userId)? 'text-red-500':'text-gray-300'} text-lg">
                                 </div>
-                                <h1 class="text-xs">1024</h1>
+                                <h1 class="text-xs">${book.likes.length}</h1>
                             </div>
                         </div>
                         <div class="text-xs text-black mt-1 line-clamp-1">
@@ -659,7 +680,7 @@ const setHomepageBooks = (prevRes) => {
                         </div>  
                                 
                                 <div class="ml-auto flex flex-col items-center justify-center">
-                                    <div onclick="likeOrDislikeBook(${userId},${book.id})" class="fas fa-heart ${book.likes.find((user)=> user.userId == userId)? 'text-red-500':'text-gray-300'} text-lg">
+                                    <div onclick="likeOrDislikeBook(${userId??''},${book.id})" class="fas fa-heart ${book.likes.find((user)=> user.userId == userId)? 'text-red-500':'text-gray-300'} text-lg">
                                     </div>
                                     <h1 class="text-xs">${book.likes.length}</h1>
                                 </div>
@@ -696,7 +717,7 @@ const setHomepageBooks = (prevRes) => {
                             </div>
                         </div>
                     </div>
-                    <div class="mt-auto border-b border-[#460C90] w-full opacity-20 ${isFirstLast? ' hidden ' : isSecondLast? `${res.length % 2 == 0? ` md:hidden ` :
+                    <div class="mt-auto border-b border-[#460C90] w-full opacity-20 ${isFirstLast? ' hidden ' : isSecondLast? `${res.length % 2 == 0? ` md:hidden ${res.length % 3? 'lg:flex' : ''} ` :
                      res.length % 3 == 0? ` lg:hidden `:' '}`: isThirdLast? `${res.length % 3 == 0? ` lg:hidden `: ``}` : ``}">
                     </div>
                     </div>

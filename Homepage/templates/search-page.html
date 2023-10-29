@@ -816,6 +816,18 @@ const showError = (message) => {
     }
   }
 
+  const showError = (message) => {
+    return Toastify({
+        text: message,
+        duration: 3000, // Durasi tampilan toast (dalam milidetik)
+        style: {
+          background: 'red', // Warna latar belakang untuk pesan sukses
+          color: 'white', // Warna teks untuk pesan sukses
+        },
+        close:true
+      }).showToast();
+}
+
   const setBooksWrapper=  (res, sameText='') => {
     console.log('HEII')
     loading.style.display = 'flex';
