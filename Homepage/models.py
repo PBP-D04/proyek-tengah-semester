@@ -21,7 +21,7 @@ class Category(models.Model):
         return self.name
 
 class Book(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
     title = models.CharField(max_length=255, blank=False, null=False)
     subtitle = models.CharField(max_length=255, blank=True, null=True )
     description = models.TextField(blank=True, null=True)

@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from .models import Book, Category
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
+from Bookphoria.models import UserProfile
 
 # Create your views here.
 @csrf_exempt
@@ -35,8 +36,12 @@ def advanced_search(request):
 
     books = Book.objects.prefetch_related('authors', 'images', 'categories').filter(query)
     book_list = []
+    
     for book in books:
+        profil = Profil.objects.get(user=book.user)
         book_data  = {
+            'fullname':profil.fullname,
+            'username':profil.username,
             'title': book.title,
             'subtitle': book.subtitle,
             'description': book.description,
@@ -83,9 +88,17 @@ def get_categories(request):
 def search_page(request, category, search_text ):
     information = {
         'category':category,
-        'search_text':search_text
+        'search_text':search_text,
+        'is_category_only':"False"
     }
     return render(request,'search-page.html', information)
+def search_category_page(request,category):
+    information = {
+        'category':category,
+        'search_text':category,
+        'is_category_only':"True"
+    }
+    return render(request, 'search-page.html', information)
 
 @csrf_exempt
 def search_books_json(request, category, search_text):
@@ -128,10 +141,12 @@ def search_books_json(request, category, search_text):
 
 @csrf_exempt
 def get_books_json(request):
-    books = Book.objects.prefetch_related('authors', 'images', 'categories').all()
+    books = Book.objects.prefetch_related('authors', 'images', 'categories').select_related('user__auth_user').all()
     book_list = []
     for book in books:
         book_data  = {
+            'fullname':book.user.auth_user.fullname,
+            'username':book.user.auth_user.username,
             'id': book.pk,
             'title': book.title,
             'subtitle': book.subtitle,

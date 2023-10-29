@@ -6,6 +6,7 @@ urlpatterns = [
     path('', home, name='home'),
     path('get-books/', get_books_json, name='get-books' ),
     path('all-books/', all_books_page, name='all-books-page'),
+    path('search-books/<str:category>'),
     path('search-books/<str:category>/<str:search_text>/', search_page, name='search-page'),
     path('search-books-json/<str:category>/<str:search_text>', search_books_json, name='search-books-json' ),
     path('get-categories/', get_categories, name='get-categories'),

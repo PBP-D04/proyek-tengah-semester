@@ -138,9 +138,13 @@ def edit_profile(request):
         userProfile.phone_number= phone_number
         userProfile.password = password
         request.user.set_password(password)
-        request.user.save() # perubahan terakhir
-        userProfile.save() # perubahan terakhir
-        return redirect ('/view/')
+        request.user.save()
+        userProfile.save()
+        user = authenticate(request, username= userProfile.username, password=password)
+        if user:
+            login(request,user)
+            return redirect ('/view/')
+        
     userProfile = UserProfile.objects.get(user=request.user)
     return render(request, 'edituser.html', {'form': form, 'userProfile':userProfile})
 

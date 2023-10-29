@@ -440,7 +440,6 @@ const setCarouselBooks = (res) => {
             carouselContainer.classList.add('hidden');
             return;
         }
-        console.log("HALOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
         res.forEach((book, index)=>{
             console.log(book)
             console.log(index)
@@ -470,7 +469,7 @@ const setCarouselBooks = (res) => {
                             </div>
                         </div>
                         <div class="text-xs text-black mt-1 line-clamp-1">
-                            Created by <span class="text-[#460C90]">Isa Citra</span>
+                            Created by <a href="/profile/${book.username??''}" class="text-[#460C90] hover:underline">${book.fullname? book.fullname :'Unknown'}</a>
                         </div>
                         <div class="mt-1 flex items-center space-x-2">
                             <div class="rating text-yellow-400 text-sm">
@@ -487,7 +486,7 @@ const setCarouselBooks = (res) => {
                         <div  class="mt-1 text-[#C52A62] text-xs line-clamp-2">
                         ${book.categories.length > 0 ? book.categories.map((category,index)=>{
                             if(index == book.categories.length - 1){
-                                return `<a>${category}</a><span>.</span>`
+                                return `<a href="/" >${category}</a><span>.</span>`
                             }
                             return `<a>${category}</a><span>, </span>`
                         }) : 'No categories'}
@@ -498,7 +497,7 @@ const setCarouselBooks = (res) => {
                         <div  class="mt-1 text-[#C52A62] font-bold text-sm line-clamp-2">
                         ${book.currencyCode && book.price? `${book.currencyCode} <span>${book.price}</span>` : 'FREE'}
                         </div>
-                        <a href="detail/book-detail/${book.id}" class="mt-auto w-full max-w-[16rem] flex items-center justify-center text-sm md:text-base text-white py-2 rounded-md bg-violet-950 hover:bg-indigo-950">
+                        <a href="detail/book-detail/${book.id}" class="mt-auto w-full max-w-[16rem] flex items-center justify-center text-xs md:text-sm lg:text-base text-white py-2 rounded-md bg-violet-950 hover:bg-indigo-950">
                             Lihat Detail Buku
                         </a>
 
@@ -626,7 +625,7 @@ const setHomepageBooks = (prevRes) => {
                             </div>
                             
                             <div class="text-xs text-gray-400 mt-1">
-                                Created by <span class="text-[#460C90]">Isa Citra</span>
+                            Created by <a href="/profile/${book.username??''}" class="text-[#460C90] hover:underline">${book.fullname? book.fullname :'Unknown'}</a>
                             </div>
                             <div class="mt-1 flex items-center space-x-2">
                                 <div class="rating text-yellow-400 text-sm">
