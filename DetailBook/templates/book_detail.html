@@ -134,6 +134,8 @@
     </div>
   </div>
 
+  
+
   <!-- Review Form Modal -->
   <div class="modal fade" id="reviewFormModal" tabindex="-1" aria-labelledby="reviewFormModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -143,11 +145,8 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="review-form" onsubmit="return false;">
-            {% csrf_token %}
-            {% for book in books %}
+          <div id="review-form" onsubmit="return false;">
             <input type="hidden" name="book_id" id="book_id" data-value="{{book.id}}"/>
-            {% endfor %}
             <div class="form-group">
               <p class="text-uppercase font-weight-bold">Your Review: </p>
               <textarea id="comment" class="input" type="text" name="review" placeholder="Type Your Review"></textarea>
@@ -179,7 +178,7 @@
             {% else %}
             <p>You must be logged in to post a review, <a href="{ % url 'Bookphoria:login' %}">Login</a></p>
             {% endif %}
-          </form>
+          </div>
         </div>
       </div>
     </div>
@@ -188,15 +187,18 @@
   <div class="container mt-5">
     <h5 class="text-uppercase font-weight-bold">Reviews</h5>
     <hr class="mt-0 pt-0">
-    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reviewFormModal">
-      Add Review by AJAX
+    <button id="button-add-review" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reviewFormModal">
+      Add Review
     </button>
   </div>
 </div>
 
 
 <script type="module">
-
+const buttonReviewAdd = document.getElementById('button-add-review')
+buttonReviewAdd.addEventListener('click', ()=> {
+  document.getElementById('reviewFormModal').style.display = 'flex'
+})
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-analytics.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-storage.js";
@@ -354,9 +356,9 @@ const firebaseConfig = {
       body: JSON.stringify({"content":content, "rating":rating, "photo":url??null, "bookId":bookId})
     })
     const result = await res.json()
+    document.getElementById("reviewFormModal").style.display = 'none'
     refreshReviews()
-    document.getElementById().reset("review-form");
-    return false;
+    
   }
   document.getElementById("post-btn").onclick = addReview
 

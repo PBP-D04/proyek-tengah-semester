@@ -65,7 +65,7 @@ const firebaseConfig = {
     const storageRef  = ref(storage, "django-image/", file.name);
     if(!file){
         console.log("Tidak ada file yang diupload");
-        return;
+        return null;
     }
     try {
         const snapshot = await uploadBytes(storageRef, file);

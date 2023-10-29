@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 
 
 # Create your views here.
@@ -41,7 +42,6 @@ def get_review_json(request):
     return HttpResponse(serializers.serialize('json', review))
 
 @csrf_exempt
-@login_required(login_url='/login/')
 def create_review(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -50,7 +50,6 @@ def create_review(request):
         content = data['content']
         photo = data['photo']
         user = request.user
-
         new_review = Review(book=book, rating=rating, content=content, photo=photo, user=user)
         new_review.save()
 
