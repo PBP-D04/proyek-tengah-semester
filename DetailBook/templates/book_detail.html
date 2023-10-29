@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 
 {% block content %}
 <div class="container mt-4">
@@ -146,7 +146,7 @@
           <form id="review-form" onsubmit="return false;">
             {% csrf_token %}
             {% for book in books %}
-            <input type="hidden" name="book_id" id="book_id" value="{{book.id}}"/>
+            <input type="hidden" name="book_id" id="book_id" data-value="{{book.id}}"/>
             {% endfor %}
             <div class="form-group">
               <p class="text-uppercase font-weight-bold">Your Review: </p>
@@ -184,7 +184,6 @@
       </div>
     </div>
   </div>
-
   <!-- Trigger buttons -->
   <div class="container mt-5">
     <h5 class="text-uppercase font-weight-bold">Reviews</h5>
@@ -193,11 +192,73 @@
       Add Review by AJAX
     </button>
   </div>
-
 </div>
 
 
-<script>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-analytics.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-storage.js";
+const UPLOAD_BUTTONS = [{
+    buttonId: 'upload-file-button-example',
+    inputId: 'upload-file-example'
+    },
+]
+
+const firebaseConfig = {
+    apiKey: "AIzaSyC_SfzhQZo261Z3kBvxNEz2zY1gzKAQ274",
+    authDomain: "isa-citra-1691878861005.firebaseapp.com",
+    projectId: "isa-citra-1691878861005",
+    storageBucket: "isa-citra-1691878861005.appspot.com",
+    messagingSenderId: "162707233969",
+    appId: "1:162707233969:web:04d90b8885ba8768999690",
+    measurementId: "G-ERVNNYPQ3L"
+};
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const storage = getStorage(app);
+
+  /* 
+  file ekuivalen dengan event.files[0]
+  */
+  const uploadImageByElement = async (elementId)=> {
+    const ele = document.getElementById(elementId);
+    const file = ele?.files[0];
+    if(!file){
+        console.log("Tidak ada file yang diupload");
+        return;
+    }
+    const storageRef  = ref(storage, "django-image/", file.name);
+    try {
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(storageRef);
+        console.log(downloadURL)
+        return downloadURL;
+    } catch (error) {
+        console.error("Kesalahan dalam mengupload file: ", error)
+    }
+  }
+  const uploadImageByFile = async (file) => {
+    const storageRef  = ref(storage, "django-image/", file.name);
+    if(!file){
+        console.log("Tidak ada file yang diupload");
+        return;
+    }
+    try {
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(storageRef);
+        console.log(downloadURL)
+        return downloadURL;
+    } catch (error) {
+        console.error("Kesalahan dalam mengupload file: ", error)
+    }
+  }
+
+
+
   const bookEle = document.getElementById('bookId')
   async function getComment() {
     return fetch("{% url 'DetailBook:get_comment_json' %}").then((res) => res.json())
@@ -265,29 +326,39 @@
 
       const reviewText = document.createElement("p");
       console.log(review.fields);
+      reviewText.textContent = `${review.fields.content}`;
+      reviewElement.appendChild(reviewText);
+
       reviewsContainer.appendChild(reviewElement);
 
     })
-
-    document.addEventListener("DOMContentLoaded", refreshReviews);
   }
+  document.addEventListener("DOMContentLoaded", refreshReviews);
 
   async function addReview() {
     const bookId = bookEle.getAttribute("data-value")
     console.log(bookEle.getAttribute("data-value"), "ini")
-    const review = document.getElementById("name").value
+    const content = document.getElementById("comment").value
+    console.log(content)
+    const rating = document.querySelector('input[name="rate"]:checked').value;
+    console.log(rating)
+    const photo = document.getElementById("upload-image")
+    console.log(photo)
+    const url = await uploadImageByElement("upload-image")
+    console.log(url)
     const res = await fetch ("/review/create-review/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({"review":review, "bookId":bookId})
+      body: JSON.stringify({"content":content, "rating":rating, "photo":url??null, "bookId":bookId})
     })
     const result = await res.json()
     refreshReviews()
     document.getElementById().reset("review-form");
     return false;
   }
+  document.getElementById("post-btn").onclick = addReview
 
     // let data = {
     //     'imageUrl': '',
@@ -319,8 +390,6 @@
     //     console.log(res)
 
     // })
-
-document.getElementById("post-btn").onclick = addReview
 
 </script>
 
@@ -389,7 +458,7 @@ document.getElementById("post-btn").onclick = addReview
   }
 
   .mt-0.pt-0 {
-    border-top: 1px solid #460c90;
+    border-top: 1px solid #460C90;
   }
 
 
@@ -459,6 +528,26 @@ document.getElementById("post-btn").onclick = addReview
 
   .form-group {
     margin-bottom: 2px;
+  }
+
+  .btn-success {
+    background-color: #460c90; /* Mengubah warna background menjadi ungu */
+    border-color: #460c90; /* Mengubah warna border menjadi ungu */
+  }
+
+  .container .btn-success {
+    margin-top: 10px; /* Mengatur jarak atas sebesar 20px */
+    margin-bottom: 20px;
+  }
+
+  .btn-success:hover {
+    background-color: #3a156b;
+    border-color:#3a156b;
+  }
+
+  .btn-secondary {
+    background-color: #808080;
+    border-color: #808080;
   }
 
 </style>
