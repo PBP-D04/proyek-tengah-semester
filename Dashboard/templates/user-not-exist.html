@@ -11,7 +11,7 @@
     {% include "partials/loading-text.html"  %}\
         <section id="homeContent" class="hidden mt-16 md:mt-20 mx-12 flex md:flex-row md:flex-row flex-col flex-row gap-10">
             <div class="w-full flex flex-col items-center">
-                <h2 class="text-xl mb-4 opacity-50">User does not exists</h2>
+                <h2 class="text-xl mb-4 opacity-50">User does not exist</h2>
             </div>
         </section>
     <script>
@@ -52,7 +52,7 @@ async function refreshBookList() {
         console.log("====================================")
         bookList.innerHTML = ""
         if (data.books.length == 0){
-            bookList.innerHTML = `<p>You have no books :(</p>`
+            bookList.innerHTML = `<p>No books yet</p>`
         } else {
             data.books.forEach(book => {
                 bookList.innerHTML += "\n" +

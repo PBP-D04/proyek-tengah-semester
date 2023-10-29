@@ -35,7 +35,7 @@ async function refreshBookList() {
         console.log("====================================")
         bookList.innerHTML = ""
         if (data.books.length == 0){
-            bookList.innerHTML = `<p>You have no books :(</p>`
+            bookList.innerHTML = `<p>No books yet</p>`
         } else {
             data.books.forEach(book => {
                 bookList.innerHTML += "\n" +

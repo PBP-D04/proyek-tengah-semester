@@ -46,6 +46,8 @@ def get_profile(request):
         book_list.append(book.thumbnail)
         # print(book.thumbnail)
         # print(book_list)
+    if user.profile_picture is None:
+        user.profile_picture = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJ03Q9ChkabFQ9M3syb-NEQOk9x34zv4pfFQ&usqp=CAU'
     context = {
         'books':book_list,
         'form': form,
@@ -96,6 +98,8 @@ def visit_profile(request, username):
         book_list.append(book.thumbnail)
         # print(book.thumbnail)
         # print(book_list)
+    if user.profile_picture is None:
+        user.profile_picture = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJ03Q9ChkabFQ9M3syb-NEQOk9x34zv4pfFQ&usqp=CAU'
     context = {
         'books':book_list,
         'form': form,
@@ -166,8 +170,8 @@ def get_reviews_json(request):
     for review in reviews:
         review_data  = {
            # 'thumbnail': review.thumbnail,
-            'thumbnail' : review.photo,
-            'title': "Sebuah Judul" if review.title is None else review.title,  # Review dr Review App ga include title
+            'thumbnail' : review.photo.url if review.photo else "https://m.media-amazon.com/images/I/71lgQcXtPMS._AC_UF894,1000_QL80_.jpg",
+            'title': "Sebuah Judul" if review.book.title is None else review.book.title,  # Review dr Review App ga include title
             'rating': review.rating,
             'content': review.content,
         }

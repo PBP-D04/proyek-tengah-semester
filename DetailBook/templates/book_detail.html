@@ -1,9 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
-<div class="container mt-4">
+{% block meta %}
+    <title>Bookphoria</title>
+{% endblock meta %}
 
+
+{% block content %}
+
+{% include 'partials/navbar.html' %}
+{% include "partials/sidebar.html"  %}
+<div class="container mt-24">
   <div class="row">
     <div class="col-md-4 mb-3">
       <div class="img-container" style="background-color: transparent;">
@@ -22,33 +29,44 @@
             <span class="info-title" style="font-weight: bold;">Author</span>
             <span class="info-content">{{ book.authors }}</span>
           </div>
+
           <div class="info-row">
             <span class="info-title" style="font-weight: bold;">Category</span>
-            <span class="info-content">{{ book.categories }}</span>
+            <span class="info-content">{{ book.categories|default:"-" }}</span>
           </div>
+
           <div class="info-row">
             <span class="info-title" style="font-weight: bold;">Publisher</span>
-            <span class="info-content">{{ book.publisher }}</span>
+            <span class="info-content">{{ book.publisher|default:"-" }}</span>
           </div>
           <div class="info-row">
             <span class="info-title" style="font-weight: bold;">Language</span>
-            <span class="info-content">{{ book.language }}</span>
+            <span class="info-content">{{ book.language|default:"-" }}</span>
           </div>
           <div class="info-row">
             <span class="info-title" style="font-weight: bold;">Pages</span>
-            <span class="info-content">{{ book.page_count }}</span>
+            <span class="info-content">{{ book.page_count|default:"-" }}</span>
           </div>
           <div class="info-row">
             <span class="info-title" style="font-weight: bold;">Published Date</span>
-            <span class="info-content">{{ book.published_date }}</span>
+            <span class="info-content">{{ book.published_date|default:"-" }}</span>
           </div>
+
           <div class="info-row">
             <span class="info-title" style="font-weight: bold;">Price</span>
-            <span class="info-content">{{ book.currencyCode }} {{ book.price }} </span>
+            <span class="info-content">
+              {% if book.currencyCode %}
+                {{ book.currencyCode }} {{ book.price|default:"-" }}
+              {% else %}
+                -
+              {% endif %}
+            </span>
           </div>
+
+
           <div class="info-row">
             <span class="info-title" style="font-weight: bold;">Description</span>
-            <span class="info-content">{{ book.description }}</span>
+            <span class="info-content">{{ book.description|default:"-"}}</span>
           </div>
           
           {% if book.pdf_link|length != 0 %}
@@ -134,8 +152,6 @@
     </div>
   </div>
 
-  
-
   <!-- Review Form Modal -->
   <div class="modal fade" id="reviewFormModal" tabindex="-1" aria-labelledby="reviewFormModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -145,8 +161,11 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div id="review-form" onsubmit="return false;">
-            <input type="hidden" name="book_id" id="book_id" data-value="{{book.id}}"/>
+          <form id="review-form" onsubmit="return false;">
+            {% csrf_token %}
+            {% for book in books %}
+            <input type="hidden" name="book_id" id="book_id" value="{{book.id}}"/>
+            {% endfor %}
             <div class="form-group">
               <p class="text-uppercase font-weight-bold">Your Review: </p>
               <textarea id="comment" class="input" type="text" name="review" placeholder="Type Your Review"></textarea>
@@ -178,21 +197,21 @@
             {% else %}
             <p>You must be logged in to post a review, <a href="{ % url 'Bookphoria:login' %}">Login</a></p>
             {% endif %}
-          </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
+
   <!-- Trigger buttons -->
   <div class="container mt-5">
     <h5 class="text-uppercase font-weight-bold">Reviews</h5>
     <hr class="mt-0 pt-0">
-    <button id="button-add-review" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reviewFormModal">
-      Add Review
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reviewFormModal">
+      Add Review by AJAX
     </button>
   </div>
 </div>
-
 
 <script type="module">
 const buttonReviewAdd = document.getElementById('button-add-review')
@@ -262,18 +281,20 @@ const firebaseConfig = {
 
 
   const bookEle = document.getElementById('bookId')
-  async function getComment() {
-    return fetch("{% url 'DetailBook:get_comment_json' %}").then((res) => res.json())
+  
+  async function getComment(bookId) {
+    return fetch(`/detail/get-comment/${bookId}`).then((res) => res.json());
   }
 
   async function refreshComments() {
+    const bookId = bookEle.getAttribute('data-value');
     const commentsContainer = document.getElementById("comments-container");
-    commentsContainer.innerHTML = ""; // Clear the container before adding new comments
-  
-    const comments = await getComment();
+    commentsContainer.innerHTML = "";
+
+    const comments = await getComment(bookId);
     comments.forEach((comment) => {
       const commentElement = document.createElement("div");
-      commentElement.style.backgroundColor = '#f0f0f0';  // Menambahkan backdrop warna abu-abu
+      commentElement.style.backgroundColor = '#f0f0f0';
       commentElement.style.padding = '10px';
       commentElement.style.marginBottom = '10px';
       
@@ -286,7 +307,6 @@ const firebaseConfig = {
     });
   }
   
-  // Panggil refreshComments saat halaman dimuat
   document.addEventListener("DOMContentLoaded", refreshComments);
 
   async function addComment() {
@@ -328,39 +348,29 @@ const firebaseConfig = {
 
       const reviewText = document.createElement("p");
       console.log(review.fields);
-      reviewText.textContent = `${review.fields.content}`;
-      reviewElement.appendChild(reviewText);
-
       reviewsContainer.appendChild(reviewElement);
 
     })
+
+    document.addEventListener("DOMContentLoaded", refreshReviews);
   }
-  document.addEventListener("DOMContentLoaded", refreshReviews);
 
   async function addReview() {
     const bookId = bookEle.getAttribute("data-value")
     console.log(bookEle.getAttribute("data-value"), "ini")
-    const content = document.getElementById("comment").value
-    console.log(content)
-    const rating = document.querySelector('input[name="rate"]:checked').value;
-    console.log(rating)
-    const photo = document.getElementById("upload-image")
-    console.log(photo)
-    const url = await uploadImageByElement("upload-image")
-    console.log(url)
+    const review = document.getElementById("name").value
     const res = await fetch ("/review/create-review/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({"content":content, "rating":rating, "photo":url??null, "bookId":bookId})
+      body: JSON.stringify({"review":review, "bookId":bookId})
     })
     const result = await res.json()
-    document.getElementById("reviewFormModal").style.display = 'none'
     refreshReviews()
-    
+    document.getElementById().reset("review-form");
+    return false;
   }
-  document.getElementById("post-btn").onclick = addReview
 
     // let data = {
     //     'imageUrl': '',
@@ -392,6 +402,8 @@ const firebaseConfig = {
     //     console.log(res)
 
     // })
+
+document.getElementById("post-btn").onclick = addReview
 
 </script>
 
@@ -460,7 +472,7 @@ const firebaseConfig = {
   }
 
   .mt-0.pt-0 {
-    border-top: 1px solid #460C90;
+    border-top: 1px solid #460c90;
   }
 
 
@@ -530,26 +542,6 @@ const firebaseConfig = {
 
   .form-group {
     margin-bottom: 2px;
-  }
-
-  .btn-success {
-    background-color: #460c90; /* Mengubah warna background menjadi ungu */
-    border-color: #460c90; /* Mengubah warna border menjadi ungu */
-  }
-
-  .container .btn-success {
-    margin-top: 10px; /* Mengatur jarak atas sebesar 20px */
-    margin-bottom: 20px;
-  }
-
-  .btn-success:hover {
-    background-color: #3a156b;
-    border-color:#3a156b;
-  }
-
-  .btn-secondary {
-    background-color: #808080;
-    border-color: #808080;
   }
 
 </style>

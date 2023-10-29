@@ -130,102 +130,169 @@
 
 
 
-<div class="container mt-5">
-    <h5 class="text-uppercase font-weight-bold">Reviews</h5>
-    <hr class="mt-0 pt-0">
-    <div class="col-sm-7 mt-2">
-    {% for review in reviews %}
-        <div class="review-heading">
-            <a class="text-capitalize"><i class="far fa-user mr-1"></i>{{review.user.username}}</a>
-            <a class="ml-2"><i class="far fa-clock mr-1"></i>{{review.date_added}}</a>
-            <i class="fa fa-star {% if review.rate > 4 %} checked {% endif %}" style="float: right;"></i>
-            <i class="fa fa-star {% if review.rate > 3 %} checked {% endif %}" style="float: right;"></i>
-            <i class="fa fa-star {% if review.rate > 2 %} checked {% endif %}" style="float:right;"></i>
-            <i class="fa fa-star {% if review.rate > 1 %} checked {% endif %}" style="float:right;"></i>
-            <i class="fa fa-star {% if review.rate > 0 %} checked {% endif %}" style="float:right;"></i>
-        </div>
-        <div class="review-body mt-2">
-            <p>{{review.review}}</p>
-            {% if review.image %}
-                    <img src="{{ review.image.url }}" alt="Review Image" class="img-fluid mt-2">
-            {% endif %}
-        </div>
-    {% endfor %}
-    </div>
-    <div class="col-sm-5 mt-2">
-        <form class="review-form" method="POST" action="/review">
-        {% csrf_token %}
-        {% for book in books %}
-            <input type="hidden" name="book_id" id="book_id" value="{{book.id}}"/>
-            {% endfor %}
-            <div class="form-group">
-              <p class="text-uppercase font-weight-bold">Your Review: </p>
-              <textarea id="comment" class="input" type="text" name="review" placeholder="Type Your Review"></textarea>
-            </div>
-            <div class="form-group">
-              <p class="text-uppercase font-weight-bold">Upload Image: </p>
-              <input id="upload-image" type="file" name="image" accept="image/*">
-            </div>
-            <div class="form-group">
-                <div class="input-rate">
-                  <p class="text-uppercase font-weight-bold">Your Rating: </p>
-                  <div class="rate-wrapper">
-                      <input type="radio" id="star-1" name="rate" value="1">
-                      <label for="star-1"></label>
-                      <input type="radio" id="star-2" name="rate" value="2">
-                      <label for="star-2"></label>
-                      <input type="radio" id="star-3" name="rate" value="3">
-                      <label for="star-3"></label>
-                      <input type="radio" id="star-4" name="rate" value="4">
-                      <label for="star-4"></label>
-                      <input type="radio" id="star-5" name="rate" value="5">
-                      <label for="star-5"></label>
-                  </div>
-                </div>
-            </div>
-            {% if user.is_authenticated %}
-            <button id="post-btn" class="btn btn-danger btn-md m-0" type="submit">Post</button>
-            {% else %}
-            <p>You must be logged in for post a review, <a href="{ % url 'Bookphoria:login' %}">Login</a></p>
-            {% endif %}
-        </form>
+<!-- REVIEW SECTION -->
+<!-- Reviews List Modal -->
+<div class="modal fade" id="reviewsModal" tabindex="-1" aria-labelledby="reviewsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reviewsModalLabel">Reviews</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- Review Form Modal -->
+<div class="modal fade" id="reviewFormModal" tabindex="-1" aria-labelledby="reviewFormModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reviewFormModalLabel">Add New Review</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" id="add-review-form" class="space-y-6" action="#">
+          {% csrf_token %}
+          <table>
+              {{ form.as_table }}
+              <tr>
+                  <td></td>
+                  <td>
+                      <input type="submit" value="Add Review" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 hover:cursor-pointer"/>
+                      <!-- <button id="submit_new_book" type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add your book</button> -->
+                  </td>
+              </tr>
+          </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Trigger buttons -->
+<div class="container mt-5">
+  <h5 class="text-uppercase font-weight-bold">Reviews</h5>
+  <hr class="mt-0 pt-0">
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reviewFormModal">
+      Add Review by AJAX
+    </button>
+</div>
+
+</div>
+<h2 class="mt-10 mb-4 text-3xl font-bold mx-8">Recent Reviews All Around The World:</h2>
+<div id="reviews-container" class="flex flex-col gap-8 mx-10 mb-10">
+  <!-- Daftar ulasan akan ditampilkan di sini -->
+  <!-- <div class="shadow-xl w-full rounded-xl bg-zinc-100 px-4 py-6">
+    <p class="opacity-40">Hoshimachi gave <span class="font-bold opacity-100">4.5</span> rating to</p>
+    <h5 class="text-xl font-bold">Title</h5>
+    <p>yowai mooo</p>
+  </div>
+  <div class="shadow-xl w-full rounded-xl bg-zinc-100 px-4 py-6">
+    <p class="opacity-40">Hoshimachi gave <span class="font-bold opacity-100">4.5</span> rating to</p>
+    <h5 class="text-xl font-bold">Title</h5>
+    <p>yowai mooo</p>
+  </div>
+  <div class="shadow-xl w-full rounded-xl bg-zinc-100 px-4 py-6">
+    <p class="opacity-40">Hoshimachi gave <span class="font-bold opacity-100">4.5</span> rating to</p>
+    <h5 class="text-xl font-bold">Title</h5>
+    <p>yowai mooo</p>
+  </div>
+  <div class="shadow-xl w-full rounded-xl bg-zinc-100 px-4 py-6">
+    <p class="opacity-40">Hoshimachi gave <span class="font-bold opacity-100">4.5</span> rating to</p>
+    <h5 class="text-xl font-bold">Title</h5>
+    <p>yowai mooo</p>
+  </div>
+  <div class="shadow-xl w-full rounded-xl bg-zinc-100 px-4 py-6">
+    <p class="opacity-40">Hoshimachi gave <span class="font-bold opacity-100">4.5</span> rating to</p>
+    <h5 class="text-xl font-bold">Title</h5>
+    <p>yowai mooo</p>
+  </div>
+  <div class="shadow-xl w-full rounded-xl bg-zinc-100 px-4 py-6">
+    <p class="opacity-40">Hoshimachi gave <span class="font-bold opacity-100">4.5</span> rating to</p>
+    <h5 class="text-xl font-bold">Title</h5>
+    <p>yowai mooo</p>
+  </div> -->
+</div>
+
+
 
 
 <script>
-    let data = {
-        'imageUrl': '',
-        'rate': 5,
-        'comment':''
-    }
-    const setData = async  () => {
-       const rateInput =  document.querySelector('input[name="rate"]:checked');
-       const comment = document.getElementById("comment");
-       if(rateInput.value){
-        data.rate = parseInt(rateInput.value)
-       }
-       data.comment = comment.value.trim()
-       const res = await uploadImageByElement('upload-image')
-       data.imageUrl = res
-       
-    }
-    const postBtn = document.getElementById('post-btn')
-    postBtn.addEventListener('click', async ()=> {
-       await  setData()
-        const resjson = await fetch('/review/create-review/', {
-            method:'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
-        const res = await resjson.json()
-        console.log(res)
 
+  async function refreshReviews() {
+    const reviewsContainer = document.getElementById("reviews-container");
+    // reviewsContainer.innerHTML = "";
 
+    const tmp = await fetch("/review/get-review")
+    const data = await tmp.json()
+    console.log("data")
+    console.log(data.reviews)
+    data.reviews.forEach(review => {
+      console.log(review.user);
+      console.log(review.content);
+      reviewsContainer.innerHTML += "\n" +
+      `<div class="shadow-xl w-full rounded-xl bg-zinc-100 px-4 py-6">` +
+        `<p class="opacity-40">${review.user} gave <span class="font-bold opacity-100">${review.rating}</span> star to</p>` +
+        `<h5 class="text-xl font-bold">${review.book}</h5>` +
+        `<p>${review.content}</p>` +
+      `</div>`
     })
+  }
+  refreshReviews();
+
+  async function addReview() {
+    const bookId = bookEle.getAttribute("data-value")
+    console.log(bookEle.getAttribute("data-value"), "ini")
+    const review = document.getElementById("name").value
+    const res = await fetch ("/review/create-review/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({"review":review, "bookId":bookId})
+    })
+    const result = await res.json()
+    refreshReviews()
+    document.getElementById("add-review-form").reset()
+    return false;
+  }
+
+  document.getElementById("submit_new_review").onclick = addReview
+
+    // let data = {
+    //     'imageUrl': '',
+    //     'rate': 5,
+    //     'comment':''
+    // }
+    // const setData = async  () => {
+    //    const rateInput =  document.querySelector('input[name="rate"]:checked');
+    //    const comment = document.getElementById("comment");
+    //    if(rateInput.value){
+    //     data.rate = parseInt(rateInput.value)
+    //    }
+    //    data.comment = comment.value.trim()
+    //    const res = await uploadImageByElement('upload-image')
+    //    data.imageUrl = res
+       
+    // }
+    // const postBtn = document.getElementById('post-btn')
+    // postBtn.addEventListener('click', async ()=> {
+    //    await  setData()
+    //     const resjson = await fetch('/review/create-review/', {
+    //         method:'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify(data),
+    //     });
+    //     const res = await resjson.json()
+    //     console.log(res)
+
+    // })
 </script>
 {% endblock content %}
