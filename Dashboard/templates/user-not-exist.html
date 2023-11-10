@@ -1,3 +1,20 @@
+{% extends 'base-tailwind.html' %}
+{% load static %}
+{% block meta %}
+    <title>Bookphoria</title>
+{% endblock meta %}
+
+{% block content %}
+    
+    {% include 'partials/navbar.html' %}
+    {% include "partials/sidebar.html"  %}
+    {% include "partials/loading-text.html"  %}\
+        <section id="homeContent" class="hidden mt-16 md:mt-20 mx-12 flex md:flex-row md:flex-row flex-col flex-row gap-10">
+            <div class="w-full flex flex-col items-center">
+                <h2 class="text-xl mb-4 opacity-50">User does not exist</h2>
+            </div>
+        </section>
+    <script>
 async function refreshReviewList() {
     const reviewList = document.getElementById("review-list")
     const response = await fetch("/profile/get-reviews")
@@ -73,3 +90,8 @@ window.addEventListener("DOMContentLoaded", async ()=>{
         }
     }
 })
+    </script>
+    <script src="{% static 'js/profile.js' %}"></script>
+    <script type="module" src="{% static 'js/firebase-upload.js' %}"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+{% endblock content %}

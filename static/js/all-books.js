@@ -524,7 +524,7 @@ const setBooks = (res) => {
                             <div class="flex  justify-between items-start ">
                             <div class="mt-1 mr-2">
                             
-                            <a class="font-bold text-sm line-clamp-2 text-[#460C90]" href="detail/book-detail/${book.id}">${ book.title ? book.title : 'No Title' }</a>
+                            <a class="font-bold text-sm line-clamp-2 text-[#460C90]" href="/detail/book-detail/${book.id}">${ book.title ? book.title : 'No Title' }</a>
                             
                             <h1 class="text-gray-400 text-xs line-clamp-2">
                             ${book.authors.length > 0 ? book.authors.map((author,index)=>{

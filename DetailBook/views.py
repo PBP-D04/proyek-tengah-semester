@@ -1,5 +1,5 @@
 import json
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 from DetailBook.forms import CommentForm
 from DetailBook.models import Comment
@@ -110,7 +110,6 @@ def add_comment_ajax(request):
     return HttpResponseNotFound()
 
 
-def get_comment_json(request):
-    comment = Comment.objects.all()
-    print(comment)
-    return HttpResponse(serializers.serialize('json', comment))
+def get_comment_json(request, book_id):
+    comments = Comment.objects.filter(book__id=book_id)
+    return HttpResponse(serializers.serialize('json', comments), content_type="application/json")

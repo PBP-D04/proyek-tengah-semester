@@ -27,6 +27,7 @@ import json
 
 from Homepage.models import Book
 
+@csrf_exempt
 def register(request):
     form = UserProfileForm()
     if request.method == "POST":
@@ -51,7 +52,7 @@ def register(request):
     return render(request, 'register.html', context)
 
 
-
+@csrf_exempt
 def login_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
