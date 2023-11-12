@@ -4,7 +4,6 @@
 {% load static %}
 
 <style>
-
   .form-group {
     margin-bottom: 2px;
 
@@ -15,7 +14,6 @@
   border-color: #460C90;
   margin-top: 10px;
   }
-
 </style>
 
 
@@ -25,6 +23,8 @@
 </script>
 
 
+
+<!-- REVIEW SECTION -->
 <!-- Reviews List Modal -->
 <div class="modal fade" id="reviewsModal" tabindex="-1" aria-labelledby="reviewsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -59,9 +59,11 @@
                   <td></td>
                   <td>
                       <input type="submit" value="Add Review" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 hover:cursor-pointer"/>
+                      <!-- <button id="submit_new_book" type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add your book</button> -->
                   </td>
               </tr>
           </table>
+        </form>
       </div>
     </div>
   </div>
@@ -86,101 +88,49 @@
 
 <script>
 
-  async function getReviews() {
-        return fetch("{% url 'ReviewApp:get_review_json' %}").then((res) => res.json())
-  }
-
-  // async function refreshReviews() {
-  //   const reviewsContainer = document.getElementById("reviews-container");
-  //   const tmp = await fetch("/review/get-review")
-  //   const data = await tmp.json()
-  //   console.log("data")
-  //   console.log(data.reviews)
-  //   data.reviews.forEach(review => {
-  //     console.log(review.user);
-  //     console.log(review.content);
-  //     reviewsContainer.innerHTML += "\n" +
-  //     `<div class="shadow-xl w-full rounded-xl bg-zinc-100 px-4 py-6">` +
-  //       `<p class="opacity-40">${review.user} gave <span class="font-bold opacity-100">${review.rating}</span> star to</p>` +
-  //       `<h5 class="text-xl font-bold">${review.book}</h5>` +
-  //       `<p>${review.content}</p>` +
-  //     `</div>`
-  //   })
-  // }
-  // refreshReviews();
-
-  document.getElementById('add-review-form').onsubmit = async function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    try {
-        const response = await fetch('/review/create-review/', {
-            method: 'POST',
-            body: formData
-        });
-        const result = await response.json();
-        if (response.ok && result) { // Memeriksa apakah respons OK dan result ada
-            console.log('Review added:', result);
-            refreshReviews();
-            $('#reviewFormModal').modal('hide');
-            this.reset();
-            alert("Anda berhasil menambahkan review");
-        } else {
-            // Menangani jika server mengirimkan respons OK tapi ada error dalam proses
-            throw new Error(result.message || 'Server responded with an error');
-        }
-    } catch (error) {
-        console.error('Error adding review:', error);
-        alert("Gagal menambahkan review: " + error.message);
-    }
-  };
-
-
   async function refreshReviews() {
-    try {
-        const reviewsContainer = document.getElementById("reviews-container");
-        reviewsContainer.innerHTML = '<p>Loading reviews ...</p>';
+    const reviewsContainer = document.getElementById("reviews-container");
+    // reviewsContainer.innerHTML = '<p>Loading reviews ...</p>';
 
-        const response = await fetch("/review/get-review");
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-
-        reviewsContainer.innerHTML = '';
-        data.reviews.forEach(review => {
-            reviewsContainer.innerHTML += "\n" +
-            `<div class="shadow-xl w-full rounded-xl bg-zinc-100 px-4 py-6">` +
-            `<p class="opacity-40">${review.user} gave <span class="font-bold opacity-100">${review.rating}</span> star to</p>` +
-            `<h5 class="text-xl font-bold">${review.book}</h5>` +
-            `<p>${review.content}</p>` +
-            `</div>`;
-        });
-    } catch (error) {
-        console.error('Error fetching reviews:', error);
-        reviewsContainer.innerHTML = '<p>Error loading reviews.</p>';
-    }
+    const tmp = await fetch("/review/get-review")
+    const data = await tmp.json()
+    console.log("data")
+    console.log(data.reviews)
+    data.reviews.forEach(review => {
+      console.log(review.user);
+      console.log(review.content);
+      reviewsContainer.innerHTML += "\n" +
+      `<div class="shadow-xl w-full rounded-xl bg-zinc-100 px-4 py-6">` +
+        `<p class="opacity-40">${review.user} gave <span class="font-bold opacity-100">${review.rating}</span> star to</p>` +
+        `<h5 class="text-xl font-bold">${review.book}</h5>` +
+        `<p>${review.content}</p>` +
+      `</div>`
+    })
   }
   refreshReviews();
 
+  async function addReview(event) {
+    event.preventDefault(); // Mencegah refresh halaman
 
-  // async function addReview() {
-  //   const bookId = bookEle.getAttribute("data-value")
-  //   console.log(bookEle.getAttribute("data-value"), "ini")
-  //   const review = document.getElementById("name").value
-  //   const res = await fetch ("/review/create-review/", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify({"review":review, "bookId":bookId})
-  //   })
-  //   const result = await res.json()
-  //   refreshReviews()
-  //   document.getElementById("add-review-form").reset()
-  //   return false;
-  // }
+    const formData = new FormData(document.getElementById('add-review-form'));
 
-  // document.getElementById("submit_new_review").onclick = addReview
+    const res = await fetch("/review/create-review/", {
+        method: "POST",
+        body: formData
+    });
+    const result = await res.json();
+
+    if (res.ok) {
+        refreshReviews(); // Memperbarui daftar review
+        document.getElementById("add-review-form").reset(); // Reset form
+    } else {
+        alert("Error: " + result.message); // Menampilkan pesan error
+    }
+  }
+
+  // Event listener untuk form submission
+  document.getElementById("add-review-form").addEventListener('submit', addReview);
+
 
 </script>
 {% endblock content %}
