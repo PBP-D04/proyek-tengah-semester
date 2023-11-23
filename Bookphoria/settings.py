@@ -29,8 +29,6 @@ SECRET_KEY = 'django-insecure-db5gj=y(*e@g!a(8@dtv-*wsx)^1fy)ch@5lv!8d00*)!a5ni=
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'Homepage',
     'Bookphoria',
     'Dashboard',
@@ -56,7 +55,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    'corsheaders.middleware.CorsMiddleware'
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_HEADERS = True
 
 ROOT_URLCONF = 'Bookphoria.urls'
 

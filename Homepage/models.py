@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 from django.contrib.auth.models import User
+from Bookphoria.models import Like
 
 
 # Create your models here.

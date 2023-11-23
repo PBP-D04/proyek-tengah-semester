@@ -6,3 +6,6 @@ requests
 urllib3
 pymysql
 Pillow
+pusher
+asyncio
+django-cors-headers

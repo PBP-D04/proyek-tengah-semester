@@ -2,7 +2,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.contrib.auth.models import User
 from django import forms
-from Homepage.models import Book
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 
@@ -11,13 +10,23 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='auth_user')
     username = models.CharField(max_length=255)
     fullname= models.CharField(max_length=255)
-    liked_books = models.ManyToManyField(Book, related_name='users_like', blank=True)
     country = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=255, blank=True)
     age = models.PositiveIntegerField(blank=True, null=True)
     profile_picture = models.TextField( blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True) 
     password = models.CharField(max_length = 255, blank=False, null =False)
+
+    def to_dict(self):
+        return {
+            'username': self.username,
+            'fullname': self.fullname,
+            'country':self.country,
+            'city':self.city,
+            'age':self.age,
+            'phone_number':self.phone_number,
+            'profile_picture':self.profile_picture
+        }
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
@@ -44,7 +53,7 @@ class EditProfileForm(forms.ModelForm):
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    liked_book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    liked_book = models.ForeignKey('Homepage.Book', on_delete=models.CASCADE, related_name='user_like')
     created_at = models.DateTimeField(auto_now_add=True)
 
 class History(models.Model):

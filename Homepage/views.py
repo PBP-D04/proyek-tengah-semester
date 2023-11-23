@@ -4,7 +4,29 @@ from django.http import JsonResponse
 from .models import Book, Category
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
+from pusher_function import *
+import asyncio
+import requests
 
+@csrf_exempt  # Hanya untuk tujuan demonstrasi, sebaiknya gunakan cara autentikasi yang aman di produksi
+def proxy_endpoint(request, target_url):
+    # Dapatkan target_url dari parameter di URL
+    final_url = f'https://${target_url}'  # Ubah sesuai kebutuhan
+
+    # Lakukan permintaan ke sumber daya eksternal menggunakan requests library
+    response = requests.get(final_url)
+
+    # Ambil konten dari respons dan kirimkan kembali sebagai respons dari endpoint proxy
+    return JsonResponse(response.json())
+
+
+@csrf_exempt
+def get_dummy_message(request):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    async_result = loop.run_until_complete(dummy_check_is_ok())
+    loop.close()
+    return JsonResponse({'status':'OK'})
 # Create your views here.
 @csrf_exempt
 def advanced_search(request):
@@ -127,12 +149,11 @@ def search_books_json(request, category, search_text):
     return JsonResponse({'books': book_list})
 
 @csrf_exempt
-def get_books_json(request):
-    books = Book.objects.prefetch_related('authors', 'images', 'categories').all()
+def get_books(request):
+    books  = Book.objects.prefetch_related('authors', 'images', 'categories').all()
     book_list = []
     for book in books:
         book_data  = {
-            'id': book.pk,
             'title': book.title,
             'subtitle': book.subtitle,
             'description': book.description,
@@ -154,7 +175,46 @@ def get_books_json(request):
             'epub_link': book.epub_link,
             'maturity_rating': book.maturity_rating,
             'page_count': book.page_count,
-            'user_publish_time': book.user_publish_time,
+            'user_publish_time': book.user_publish_time
         }
         book_list.append(book_data)
+
     return JsonResponse({'books': book_list})
+@csrf_exempt
+def get_books_json(request):
+    books = Book.objects.prefetch_related('authors', 'images', 'categories', 'user_like', 'review_book__user__auth_user').select_related('user__auth_user').all()
+    book_list = []
+    for book in books:
+        book_data  = {
+            'review': [review.to_dict() for review in book.review_book.all()],
+            'user': book.user.auth_user.to_dict(),
+            'book': {
+                'id': book.pk,
+                'title': book.title,
+                'subtitle': book.subtitle,
+                'description': book.description,
+                'authors': [author.name for author in book.authors.all()],
+                'publisher': book.publisher,
+                'published_date': book.published_date.strftime('%Y-%m-%d') if book.published_date else None,
+                'language': book.language,
+                'currencyCode': book.currencyCode,
+                'is_ebook': book.is_ebook,
+                'pdf_available': book.pdf_available,
+                'pdf_link': book.pdf_link,
+                'thumbnail': book.thumbnail,
+                'categories': [category.name for category in book.categories.all()],
+                'images':[imageUrl.url for imageUrl in book.images.all()],
+                'price': book.price,
+                'saleability': book.saleability,
+                'buy_link': book.buy_link,
+                'epub_available': book.epub_available,
+                'epub_link': book.epub_link,
+                'maturity_rating': book.maturity_rating,
+                'page_count': book.page_count,
+                'user_publish_time': book.user_publish_time,
+                'book_likes':[{'username': user.username, 'userId': user.pk} for user in book.user_like.all()]
+            }
+        }
+        
+        book_list.append(book_data)
+    return JsonResponse({'book_list': book_list})

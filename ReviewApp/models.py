@@ -26,10 +26,8 @@ from Homepage.models import Book
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='review_user')
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-   # content = models.TextField(max_length=255, blank=True, null=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='review_book')
     content = models.TextField(blank=True, null=True)
-  #  rate = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
     rating = models.IntegerField(default=5,
         validators=[MinValueValidator(0), MaxValueValidator(5)]
     )
@@ -37,3 +35,14 @@ class Review(models.Model):
     date_added = models.DateField(default=timezone.now)
     def __str__(self):
         return str(self.id)
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user': self.user.auth_user.to_dict(),
+            'book_id': self.book.id,
+            'content': self.content,
+            'rating': self.rating,
+            'photo_url': self.photo.url if self.photo else None,
+            'date_added': self.date_added.strftime('%Y-%m-%d') if self.date_added else None
+            # Tambahkan informasi lain dari model Review yang ingin Anda sertakan di sini
+        }
