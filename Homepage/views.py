@@ -11,7 +11,7 @@ import requests
 @csrf_exempt  # Hanya untuk tujuan demonstrasi, sebaiknya gunakan cara autentikasi yang aman di produksi
 def proxy_endpoint(request, target_url):
     # Dapatkan target_url dari parameter di URL
-    final_url = f'https://${target_url}'  # Ubah sesuai kebutuhan
+    final_url = f'https://{target_url}'  # Ubah sesuai kebutuhan
 
     # Lakukan permintaan ke sumber daya eksternal menggunakan requests library
     response = requests.get(final_url)
