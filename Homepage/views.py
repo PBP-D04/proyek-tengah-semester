@@ -219,9 +219,7 @@ def like_or_dislike_book(request):
             else:
                 like = Like.create_like_with_id(user_id=userId, book_id=bookId)
                 book.user_like.add(like)
-            
-            update_book_like(book_id=bookId, user_id=userId, is_liked=is_liked)
-
+            update_book_like(book_id=bookId, user_id=userId, is_liked=is_liked) #FUNGSI KE PUSHER
             return JsonResponse({'message': 'Buku berhasil diperbarui', 'status': 200})
         except User.DoesNotExist:
             return JsonResponse({'message': 'User tidak ada', 'status': 404})
