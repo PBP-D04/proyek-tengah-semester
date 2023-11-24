@@ -1,24 +1,42 @@
 import json
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .models import Book, Category
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from pusher_function import *
 import asyncio
 import requests
+import urllib3
+from Bookphoria.models import Like
+from django.contrib.auth.models import User
 
-@csrf_exempt  # Hanya untuk tujuan demonstrasi, sebaiknya gunakan cara autentikasi yang aman di produksi
+@csrf_exempt
 def proxy_endpoint(request, target_url):
-    # Dapatkan target_url dari parameter di URL
-    final_url = f'https://{target_url}'  # Ubah sesuai kebutuhan
+    http = urllib3.PoolManager()
 
-    # Lakukan permintaan ke sumber daya eksternal menggunakan requests library
-    response = requests.get(final_url)
+    final_url = f'https://{target_url}'  # Ubah sesuai kebutuhan, misalnya: 'https://{target_url}'
 
-    # Ambil konten dari respons dan kirimkan kembali sebagai respons dari endpoint proxy
-    return JsonResponse(response.json())
+    try:
+        response = http.request('GET', final_url)
 
+        # Mendapatkan status code dari respons
+        status_code = response.status
+
+        # Mendapatkan tipe konten gambar
+        content_type = response.headers.get('Content-Type', 'application/octet-stream')
+
+        # Mendapatkan konten gambar
+        image = response.data
+
+        # Return response dalam bentuk HttpResponse
+        return HttpResponse(image, content_type=content_type, status=status_code)
+    except urllib3.exceptions.HTTPError as e:
+        # Tangani kesalahan permintaan HTTP
+        return HttpResponse(f'HTTP error occurred: {e}', status=500)
+    except Exception as e:
+        # Tangani kesalahan umum lainnya
+        return HttpResponse(f'An error occurred: {e}', status=500)
 
 @csrf_exempt
 def get_dummy_message(request):
@@ -180,6 +198,38 @@ def get_books(request):
         book_list.append(book_data)
 
     return JsonResponse({'books': book_list})
+
+@csrf_exempt
+def like_or_dislike_book(request):
+    if request.method == 'POST':
+        print('KUAKUUIIIIIIIIIIIIIIIIIIIIIIIIIIII........................')
+        data = json.loads(request.body)
+        bookId = data['bookId']
+        userId = data['userId']
+        is_liked = True
+        try:
+            book = Book.objects.prefetch_related('user_like').get(pk=bookId)
+            print('LELET BANGET DJANGOOOOOOOOOOOOOOOOOO')
+            if(book is None):
+                return JsonResponse({'message': 'Buku sudah dihapus', 'status': 404})
+            like_exists = book.user_like.filter(user_id=userId)
+            if like_exists.exists():
+                like_exists.delete()
+                is_liked = False
+            else:
+                like = Like.create_like_with_id(user_id=userId, book_id=bookId)
+                book.user_like.add(like)
+            
+            update_book_like(book_id=bookId, user_id=userId, is_liked=is_liked)
+
+            return JsonResponse({'message': 'Buku berhasil diperbarui', 'status': 200})
+        except User.DoesNotExist:
+            return JsonResponse({'message': 'User tidak ada', 'status': 404})
+        except Book.DoesNotExist:
+            return JsonResponse({'message': 'Buku tidak ada', 'status': 404})
+    return JsonResponse({'message': 'Kesalahan pengiriman formulir', 'status': 500})
+
+# UDAH PALING GACOR, PAKAI INI UNTUK AMBIL DATA BUKU DARI DJANGO
 @csrf_exempt
 def get_books_json(request):
     books = Book.objects.prefetch_related('authors', 'images', 'categories', 'user_like', 'review_book__user__auth_user').select_related('user__auth_user').all()
@@ -211,8 +261,8 @@ def get_books_json(request):
                 'epub_link': book.epub_link,
                 'maturity_rating': book.maturity_rating,
                 'page_count': book.page_count,
-                'user_publish_time': book.user_publish_time,
-                'book_likes':[{'username': user.username, 'userId': user.pk} for user in book.user_like.all()]
+                'user_publish_time': book.user_publish_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'book_likes':[like.to_dict() for like in book.user_like.all()]
             }
         }
         

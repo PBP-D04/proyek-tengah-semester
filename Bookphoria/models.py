@@ -19,6 +19,7 @@ class UserProfile(models.Model):
 
     def to_dict(self):
         return {
+            'id':self.user.id,
             'username': self.username,
             'fullname': self.fullname,
             'country':self.country,
@@ -55,6 +56,21 @@ class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     liked_book = models.ForeignKey('Homepage.Book', on_delete=models.CASCADE, related_name='user_like')
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def create_like_with_id(cls, user_id, book_id):
+        like = cls(user_id=user_id, liked_book_id=book_id)
+        like.save()
+        return like
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user.id,
+            'liked_book_id': self.liked_book.id,
+            'created_at': self.created_at.strftime("%Y-%m-%d %H:%M:%S")
+            # Tambahkan attribut lainnya jika diperlukan
+        }
 
 class History(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -51,6 +51,31 @@ def register(request):
     context = {'form':form}
     return render(request, 'register.html', context)
 
+@csrf_exempt
+def login_user_mobile(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            # Proses autentikasi pengguna berdasarkan data yang diterima
+            # Contoh autentikasi (harap sesuaikan dengan logika autentikasi yang sesuai)
+            username = data.get('username')
+            password = data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is None:
+                return JsonResponse({'message': 'User  tidak ditemukan', 'status': 404})
+
+            # Lakukan verifikasi pengguna di sini (contoh sederhana)
+            if user is not None:
+                # Jika autentikasi berhasil, kembalikan respons JSON
+                user = User.objects.select_related('auth_user').get(username=user.username)
+                return JsonResponse({'message': 'Login successful','user': user.auth_user.to_dict(), 'status':200})
+            else:
+                return JsonResponse({'message': 'Invalid credentials', 'status':401})
+
+        except json.JSONDecodeError as e:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
 def login_user(request):
