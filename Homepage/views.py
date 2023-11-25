@@ -1,7 +1,7 @@
 import json
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from .models import Book, Category
+from .models import Book, Category, SearchHistory
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from pusher_function import *
@@ -10,6 +10,7 @@ import requests
 import urllib3
 from Bookphoria.models import Like
 from django.contrib.auth.models import User
+from datetime import datetime
 
 @csrf_exempt
 def proxy_endpoint(request, target_url):
@@ -219,9 +220,7 @@ def like_or_dislike_book(request):
             else:
                 like = Like.create_like_with_id(user_id=userId, book_id=bookId)
                 book.user_like.add(like)
-            
-            update_book_like(book_id=bookId, user_id=userId, is_liked=is_liked)
-
+            update_book_like(book_id=bookId, user_id=userId, is_liked=is_liked) #FUNGSI KE PUSHER
             return JsonResponse({'message': 'Buku berhasil diperbarui', 'status': 200})
         except User.DoesNotExist:
             return JsonResponse({'message': 'User tidak ada', 'status': 404})
@@ -268,3 +267,40 @@ def get_books_json(request):
         
         book_list.append(book_data)
     return JsonResponse({'book_list': book_list})
+
+@csrf_exempt
+def get_history(request):
+    data = json.loads(request.body)
+    user_id = data['userId']
+    histories = SearchHistory.filter_by_user_id(user_id=user_id)
+    history_list = []
+    for history in histories:
+        history_list.append(history.to_dict())
+
+    return JsonResponse({'history':history_list})
+
+@csrf_exempt
+def add_history(request):
+    data = json.loads(request.body)
+    user_id = data['userId']
+    text = data['text']
+    time = data['time']
+    history_id = data['historyId']
+    parsed_time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%f')
+    SearchHistory.create_history_with_id(user_id=user_id, text=text, history_id=history_id, time=parsed_time)
+    return JsonResponse({'message':'Berhasil membuat history', 'status': 200})
+
+@csrf_exempt
+def delete_history(request):
+    data = json.loads(request.body)
+    user_id = data['userId']
+    history_id = data['historyId']
+    SearchHistory.delete_history_with_id(user_id=user_id, history_id=history_id)
+    return JsonResponse({'message':'Berhasil menghapus history', 'status': 200})
+
+@csrf_exempt
+def delete_all_history_from_user(request):
+    data = json.loads(request.body)
+    user_id = data['userId']
+    SearchHistory.delete_history_with_user_id(user_id=user_id)
+    return JsonResponse({'message':'Berhasil menghapus history', 'status': 200})

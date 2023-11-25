@@ -51,3 +51,38 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+class SearchHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    historyId = models.UUIDField()
+    text = models.TextField()
+    time = models.TimeField()
+
+    @classmethod
+    def create_history_with_id(cls, user_id, history_id, text, time):
+        history = cls(user_id=user_id, historyId=history_id, text=text, time=time)
+        history.save()
+        return history
+    
+    @classmethod
+    def delete_history_with_user_id(cls, user_id):
+        cls.objects.filter(user_id=user_id).delete()
+    
+    @classmethod
+    def delete_history_with_id(cls, user_id, history_id):
+        cls.objects.filter(user_id=user_id, historyId=history_id).delete()
+    
+    @classmethod
+    def filter_by_user_id(cls, user_id):
+        return cls.objects.filter(user_id=user_id)
+
+    def to_dict(self):
+        return {
+            'user_id': self.user_id,
+            'history_id': str(self.historyId),
+            'text': self.text,
+            'time': self.time.strftime("%Y-%m-%d %H:%M:%S") if self.time else None
+            # Tambahkan attribut lainnya jika diperlukan
+        }
+    
