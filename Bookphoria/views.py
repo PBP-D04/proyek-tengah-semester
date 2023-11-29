@@ -87,6 +87,36 @@ def login_user_mobile(request):
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
+def register_user_mobile(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            fullname = data.get('fullname')
+            profile_picture = data.get('profile_picture')
+            age = data.get('age')
+            country = data.get('country')
+            city = data.get('city')
+            phone_number = data.get('phone_number')
+            password = data.get('password1')
+            password_confirm = data.get('password2') #validasi password
+            if password != password_confirm:
+                error_message = "Password yang dimasukkan tidak cocok. Silakan coba lagi."
+                return JsonResponse({'message': error_message, 'status': 400})
+            user = User.objects.create_user(username=username, password=password)
+            user.save()
+            if 'profile_picture' in request.FILES:
+                print('found it')
+                user.profile_picture=request.FILES['profile_picture']
+            user.save()
+            user_profile = UserProfile(user=user,fullname=fullname,profile_picture=profile_picture, username=username, age=age, country=country, city=city, phone_number=phone_number, password= password)
+            user_profile.save() 
+            return JsonResponse({'message': 'Your account has been successfully created!', 'status': 200})
+        except json.JSONDecodeError as e:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
 def login_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
