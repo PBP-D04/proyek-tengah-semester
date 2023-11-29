@@ -13,7 +13,7 @@ class UserProfile(models.Model):
     country = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=255, blank=True)
     age = models.PositiveIntegerField(blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    profile_picture = models.TextField()
     phone_number = models.CharField(max_length=15, blank=True, null=True) 
     password = models.CharField(max_length = 255, blank=False, null =False)
 
