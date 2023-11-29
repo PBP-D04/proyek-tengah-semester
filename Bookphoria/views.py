@@ -1,4 +1,5 @@
 import datetime
+from django import forms
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -6,7 +7,7 @@ from django.http import HttpResponseRedirect
 #from Bookphoria.forms import ReviewForm
 from django.http import HttpResponse
 from django.core import serializers
-from django.urls import reverse
+from django.urls import path, reverse
 #from Bookphoria.models import EditProfileForm, Review, UserProfile, UserProfileForm
 from Bookphoria.models import EditProfileForm, UserProfile, UserProfileForm
 from django.contrib import messages
@@ -20,6 +21,7 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 from ReviewApp.models import Review # connect to ReviewApp
+from django.core.files.storage import default_storage
 
 
 import json
@@ -30,9 +32,11 @@ from Homepage.models import Book
 @csrf_exempt
 def register(request):
     form = UserProfileForm()
+    profile_picture = forms.ImageField(required=False)
     if request.method == "POST":
         username= request.POST['username']
         fullname = request.POST['fullname']
+        profile_picture= request.POST['profile_picture']
         age =int(request.POST['age'])
         country = request.POST['country']
         city = request.POST['city']
@@ -44,7 +48,12 @@ def register(request):
             return form
         user = User.objects.create_user(username=username, password=password1)
         user.save()
-        user_profile = UserProfile(user=user,fullname = fullname, username=username, age=age, country=country, city=city, phone_number=phone_number, password= password1)
+        if 'profile_picture' in request.FILES:
+                print('found it')
+                user.profile_picture= request.FILES['profile_picture']
+        user.save()
+        registered = True
+        user_profile = UserProfile(user=user,fullname = fullname,profile_picture=profile_picture, username=username, age=age, country=country, city=city, phone_number=phone_number, password= password1)
         user_profile.save() 
         messages.success(request, 'Your account has been successfully created!')
         return redirect('/login')
@@ -75,6 +84,36 @@ def login_user_mobile(request):
         except json.JSONDecodeError as e:
             return JsonResponse({'error': 'Invalid JSON format'}, status=400)
     
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def register_user_mobile(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            fullname = data.get('fullname')
+            profile_picture = data.get('profile_picture')
+            age = data.get('age')
+            country = data.get('country')
+            city = data.get('city')
+            phone_number = data.get('phone_number')
+            password = data.get('password1')
+            password_confirm = data.get('password2') #validasi password
+            if password != password_confirm:
+                error_message = "Password yang dimasukkan tidak cocok. Silakan coba lagi."
+                return JsonResponse({'message': error_message, 'status': 400})
+            user = User.objects.create_user(username=username, password=password)
+            user.save()
+            if 'profile_picture' in request.FILES:
+                print('found it')
+                user.profile_picture=request.FILES['profile_picture']
+            user.save()
+            user_profile = UserProfile(user=user,fullname=fullname,profile_picture=profile_picture, username=username, age=age, country=country, city=city, phone_number=phone_number, password= password)
+            user_profile.save() 
+            return JsonResponse({'message': 'Your account has been successfully created!', 'status': 200})
+        except json.JSONDecodeError as e:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
@@ -164,9 +203,13 @@ def edit_profile(request):
         userProfile.phone_number= phone_number
         userProfile.password = password
         request.user.set_password(password)
-        request.user.save() # perubahan terakhir
-        userProfile.save() # perubahan terakhir
-        return redirect ('/view/')
+        request.user.save()
+        userProfile.save()
+        user = authenticate(request, username= userProfile.username, password=password)
+        if user:
+            login(request,user)
+            return redirect ('/view/')
+        
     userProfile = UserProfile.objects.get(user=request.user)
     return render(request, 'edituser.html', {'form': form, 'userProfile':userProfile})
 

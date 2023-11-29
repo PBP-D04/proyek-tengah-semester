@@ -5,13 +5,16 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Bookphoria.settings")  # Ganti 
 import django
 django.setup()
 from Homepage.models import Book, Author, Category
+from django.contrib.auth.models import User
 from datetime import date
+
 
 def get_json_from_file(json_file_path):
     with open(json_file_path, 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
     return data
 def add_dummy_data(json_data):
+    user = User.objects.get(username='isaganteng')
     for book_data in json_data:
         print(book_data['volumeInfo']['title'], "\n")
 
@@ -53,6 +56,7 @@ def add_dummy_data(json_data):
         print('\n')
         
         newBook = Book(
+            user= user,
             title = book_data['volumeInfo']['title'],
             subtitle = book_data['volumeInfo'].get('subtitle',None),
             description = book_data['volumeInfo'].get('description',None),
@@ -76,7 +80,7 @@ def add_dummy_data(json_data):
         newBook.authors.add(*authors)
         newBook.categories.add(*categories)
 def main():
-    json_file_data = get_json_from_file('books2.json')
+    json_file_data = get_json_from_file('books.json')
     add_dummy_data(json_file_data)
 
 if __name__ == '__main__':

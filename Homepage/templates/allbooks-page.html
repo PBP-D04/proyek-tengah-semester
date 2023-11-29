@@ -6,7 +6,7 @@
 
 {% block content %}
     {% include "partials/all-books-navbar.html" %}
-    {% include "partials/sidebar.html" %}
+    {% include "partials/sidebar.html" with user=user %}
     {% include "partials/loading-text.html" %}
     <style>
       .books-sidebar {
@@ -21,7 +21,6 @@
     </style>
     
     <div style="z-index: 40;" id="sidebar-background" class="hidden fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-40">
-
     </div>
 
     <div id="books-sidebar"  class=" books-sidebar translate-x-[28rem]  lg:translate-x-0 transition-transform duration-700 transform  flex fixed flex-col  text-slate-800    px-4 w-full  top-0 right-0 bg-gray-200 max-h-[100vh] min-h-screen max-w-[60%] md:max-w-[35%] lg:max-w-[25%]">
@@ -203,6 +202,8 @@
       </div>
       
     </div>
+    <div class="hidden" id="user-id" data-user-id="{{ user.id|default:'' }}"></div>
+    <div class="hidden" id="user-username" data-user-username="{{ user.username|default:'' }}"></div>
 
     <div id="homeContent" class="hidden  relative w-screen lg:max-w-[75%]  max-w-[96vw] min-h-screen  flex flex-col pt-28 md:pt-32 items-center max-w-[1240px] mx-auto lg:mx-0 lg:pr-2">
         

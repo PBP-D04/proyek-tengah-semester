@@ -281,7 +281,7 @@
     </div>
 
  <div class="flex flex-col  w-screen max-w-[100vw] lg:max-w-[75%]  pt-12 lg:pt-16 min-h-screen ">
-    <div id="content" data-category="{{category}}" data-search-text="{{search_text}}" class="hidden  flex-col px-4 grow w-full">
+    <div id="content" data-category="{{category}}" data-is-category-only="{{is_category_only}}" data-search-text="{{search_text}}" class="hidden  flex-col px-4 grow w-full">
         <div class="flex flex-col w-full grow ">
             <div class="flex items-center">
                 <div id="header" class="flex flex-col w-full items-start mt-4 px-2 mb-2">
@@ -317,6 +317,7 @@
     const resultText = document.getElementById("result-total");
     const category = content.getAttribute("data-category"); // Ambil dari konteks template atau permintaan
     const searchText = content.getAttribute("data-search-text"); // Ambil dari konteks template atau permintaan
+    const isCategoryOnly = content.getAttribute("data-is-category-only") == 'True'? true : false;
     const advancedSearchBtn = document.getElementById("advanced-search");
     const advancedSearchSidebar = document.getElementById("books-sidebar");
     const advancedSearchBackground = document.getElementById("sidebar-background");
@@ -771,6 +772,23 @@ const showError = (message) => {
             console.log(error)
         }
     }
+    const customFetchBooks = async () => {
+        try{
+            console.log(category, searchText)
+            const resJson = await fetch(`/search-books-json/${category}/${searchText}`);
+            const res = await resJson.json();
+            setBooks(res.books, searchText)
+            searchTitle.innerHTML = 
+        `Hasil pencarian untuk <span class="text-indigo-600">${category}</span>`
+            books = [...res.books]
+
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+    
+
     const  userPublishTime = (timestamp) => {
     // Konversi timestamp ke objek Date
     const eventTime = new Date(timestamp);
@@ -797,6 +815,18 @@ const showError = (message) => {
       return 'Baru saja';
     }
   }
+
+  const showError = (message) => {
+    return Toastify({
+        text: message,
+        duration: 3000, // Durasi tampilan toast (dalam milidetik)
+        style: {
+          background: 'red', // Warna latar belakang untuk pesan sukses
+          color: 'white', // Warna teks untuk pesan sukses
+        },
+        close:true
+      }).showToast();
+}
 
   const setBooksWrapper=  (res, sameText='') => {
     console.log('HEII')
@@ -901,7 +931,12 @@ const showError = (message) => {
         await getCategoriesFromApi()
         establishCurrentSelectedCategories()
         handleCategoriesContainerResize()
-        await fetchBooks()
+        if(isCategoryOnly){
+            await customFetchBooks()
+        }
+        else{
+            await fetchBooks()
+        }
         content.classList.remove('hidden')
         content.classList.add('flex')
         loading.style.display = 'none';

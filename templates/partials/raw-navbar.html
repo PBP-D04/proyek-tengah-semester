@@ -1,59 +1,119 @@
 <div id="navbar" class="fixed z-20 top-0  left-0 flex flex-col items-center w-full ">
     <div class="w-full relative z-40 bg-violet-950 px-4 md:px-8 flex text-xl items-center  py-3 ">
-        <h1 class="mrv-auto text-white">BOOKPHORIA.</h1>
+        <h1 class="mr-auto text-white">BOOKPHORIA.</h1>
         <div class=" mx-auto  hidden md:flex text-white text-base lg:text-lg justify-start items-center space-x-4 lg:space-x-8">
             <a href="/">Home</a>
             <a href="/all-books">All Books</a>
-            <a href="#">Dashboard</a>
-            <a href="#">Account</a>
+            <a href="/profil/">Dashboard</a>
         </div>
-        <div  id="mobile-search-button" class="ml-auto lg:hidden text-white flex items-center ">
-            <svg class="w-4 h-4" onclick="toggleMobileNavbar();" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-            </svg>
-            <div onclick="openSidebar()" class="md:hidden ml-6 fas fa-bars  text-white">
-            </div>
-        </div>
-        <div class=" hidden lg:flex grow max-w-[40%]">
-            <div class="flex grow">
-                <label for="search-dropdown" class="search-dropdown mb-2 text-sm font-medium text-gray-900 sr-only">Books</label>
-                <div class="relative flex items-center justify-center">
-                    <button  data-dropdown-toggle="dropdown" class="dropdown-button-xl flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-l-lg hover:bg-gray-200 " type="button">
-                        <span  class="books-dropdown-current-value">All</span> <svg  class="books-dropdown-svg w-2.5 h-2.5 ml-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                    </svg>
-                    </button>
-                    <div  class="books-dropdown-content hidden absolute top-12 right-0 z-20 ">
-                        <ul  class="books-dropdown-values flex flex-col py-2 text-sm text-gray-700  rounded-lg shadow w-44 overflow-y-auto bg-violet-950 dark:text-gray-200 h-[24rem]">
-                          <li>
-                            <button  class="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-value="Terbaru">Terbaru</button>
-                          </li>
-                          <li>
-                            <button  class="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-value="Terlama">Terlama</button>
-                          </li>
-                          <li>
-                            <button class="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-value="Paling Banyak Disukai">Paling Banyak Disukai</button>
-                          </li>
-                          <li>
-                            <button class="block w-full  px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-value="Review Terbanyak">Review Terbanyak</button>
-                          </li>
-                        </ul>
-                    </div>
-                </div>                
-                <div class="relative  grow">
-                    <input type="search" id="pc-search-input" class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-r-xl border-l-gray-50 border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Search Books..." required>
-                    <button  id="pc-search-answer" class="absolute top-0 right-0 p-2.5 text-sm font-medium h-full text-white bg-indigo-600 rounded-r-lg border-2 border-indigo-600  hover:bg-indigo-800 ">
-                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+        
+        <div class="lg:grow flex items-center max-w-[40%] justify-end">
+            <div class=" hidden lg:flex grow ">
+                <div class="flex grow">
+                    <label for="search-dropdown" class="search-dropdown mb-2 text-sm font-medium text-gray-900 sr-only">Books</label>
+                    <div class="relative flex items-center justify-center">
+                        <button  data-dropdown-toggle="dropdown" class="dropdown-button-xl flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-l-lg hover:bg-gray-200 " type="button">
+                            <span  class="books-dropdown-current-value">All</span> <svg  class="books-dropdown-svg w-2.5 h-2.5 ml-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                         </svg>
-                        <span class="sr-only">Search</span>
-                    </button>
+                        </button>
+                        <div  class="books-dropdown-content hidden absolute top-12 right-0 z-20 ">
+                            <ul  class="books-dropdown-values flex flex-col py-2 text-sm text-gray-700  rounded-lg shadow w-44 overflow-y-auto bg-violet-950 dark:text-gray-200 h-[24rem]">
+                              <li>
+                                <button  class="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-value="Terbaru">Terbaru</button>
+                              </li>
+                              <li>
+                                <button  class="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-value="Terlama">Terlama</button>
+                              </li>
+                              <li>
+                                <button class="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-value="Paling Banyak Disukai">Paling Banyak Disukai</button>
+                              </li>
+                              <li>
+                                <button class="block w-full  px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-value="Review Terbanyak">Review Terbanyak</button>
+                              </li>
+                            </ul>
+                        </div>
+                    </div>                
+                    <div class="relative  grow">
+                        <input type="search" id="pc-search-input" class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-r-xl border-l-gray-50 border-l-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Search Books..." required>
+                        <button  id="pc-search-answer" class="absolute top-0 right-0 p-2.5 text-sm font-medium h-full text-white bg-indigo-600 rounded-r-lg border-2 border-indigo-600  hover:bg-indigo-800 ">
+                            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                            </svg>
+                            <span class="sr-only">Search</span>
+                        </button>
+                    </div>
                 </div>
             </div>
+            <div  id="mobile-search-button" class="ml-auto lg:hidden text-white flex items-center ">
+                    <svg class="w-4 h-4" onclick="toggleMobileNavbar();" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                    </svg>
+                    <div onclick="openSidebar()" class="md:hidden ml-6 fas fa-bars  text-white">
+                    </div>
+            </div>
+            <div class="hidden md:flex ml-2">
+                {% if user.is_authenticated %}
+                <div class="ml-2 relative inline-block text-left">
+                    <button
+                      id="user-dropdown-button"
+                      type="button"
+                      class="inline-flex items-center justify-center w-full rounded-md shadow-sm px-4 py-2 bg-transparent text-sm font-medium text-white focus:outline-none focus:ring focus:ring-offset-slate-800"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                    >
+                      <img
+                        class="w-7 h-7 rounded-full bg-white mr-2"
+                        src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture }}{% else %}{{ 'https://firebasestorage.googleapis.com/v0/b/isa-citra-1691878861005.appspot.com/o/user.png?alt=media&token=17f4203b-30ef-4b57-8c32-58444eb49d58&_gl=1*8awca9*_ga*MTg2NjAwNDg1My4xNjg3NzcyODQ3*_ga_CW55HF8NVT*MTY5ODU2OTQ4NC4xMTcuMS4xNjk4NTY5NTY4LjM2LjAuMA..' }}{% endif %}"
+                        alt="User Profile"
+                      />
+                      <svg
+                        class="-mr-1 ml-2 h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M6.293 6.293a1 1 0 011.414 0L10 8.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                          clip-rule="evenodd"
+                        ></path>
+                      </svg>
+                    </button>
+                  
+                    <div
+                      class="origin-top-right absolute right-0 mt-4 w-40 rounded-md shadow-lg bg-blue-950 ring-1 ring-black ring-opacity-5 hidden"
+                      role="menu"
+                      aria-orientation="vertical"
+                      aria-labelledby="user-dropdown-button"
+                    >
+                      <div class="py-1" role="none">
+                        <!-- Dropdown options will be added here -->
+                        <a href="/view/" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white" role="menuitem">
+                            <div class="flex justify-between items-center">
+                              <h1>Account</h1>
+                              <span class="fas fa-user w-6 h-6"></span> <!-- Ikon Font Awesome untuk akun -->
+                            </div>
+                          </a>
+                          <a href="/logout/" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white" role="menuitem">
+                            <div class="flex justify-between items-center">
+                              <h1>Logout</h1>
+                              <span class="fas fa-sign-out-alt w-6 h-6"></span> <!-- Ikon Font Awesome untuk logout -->
+                            </div>
+                          </a>
+                      </div>
+                    </div>
+                  </div>
+                {% else %}
+                <a href="/login/" class="ml-4 rounded-md text-white flex items-center justify-center text-sm bg-indigo-500 hover:bg-indigo-600 px-3 py-2"><h1>Login</h1></a>
+                {% endif %}
+            </div>
         </div>
+
     </div>
     <div id="mobile-search-bar" class="absolute top-12 left-0 flex justify-center items-center w-full py-3 px-4 bg-violet-950  transform -translate-y-96 transition-transform duration-300 ease-in-out">
-        <div class="mx-auto flex  w-[90vw] max-w-[90vw]">
+        <div class="mx-auto flex mt-3  w-[90vw] max-w-[90vw]">
             <div class="flex grow">
                 <label for="books-dropdown" class="mb-2 text-sm font-medium text-gray-900 sr-only">Books</label>
                 <div class="relative flex items-center justify-center">
@@ -94,7 +154,7 @@
 </div>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script>
-    let mode = () => window.innerWidth < 768 ? 'MOBILE' : window.innerWidth < 1024? 'MEDIUM' : 'LARGE';
+    let navmode = () => window.innerWidth < 768 ? 'MOBILE' : window.innerWidth < 1024? 'MEDIUM' : 'LARGE';
     let currentSearchCategory = 'All';
     let categories = ['All'];
     let isBooksDropdownOpen = false;
@@ -174,7 +234,7 @@
 }
 
     const toggleBooksDropdown = () => {
-        const currentMode = mode();
+        const currentMode = navmode();
         if(currentMode == 'MOBILE' || currentMode == 'MEDIUM'){
             if(isBooksDropdownMobileOpen){
                 closeBooksDropdown()
@@ -193,8 +253,8 @@
         }
     }
 
-    const setMode = () => {
-        if(mode() == 'MOBILE'){
+    const ssetMode = () => {
+        if(navmode() == 'MOBILE'){
             bookDropdownContent[0].className = `max-h-[24rem] hidden absolute top-12 right-0 z-20  bg-violet-700 divide-y divide-gray-100 rounded-lg shadow w-44 `;
             bookDropdownSVG[0].classList.remove('rotate-180');
             isBooksDropdownOpen = false;
@@ -206,10 +266,10 @@
         }
     
     }
-    setMode()
-    window.addEventListener('resize', setMode )
+    ssetMode()
+    window.addEventListener('resize', ssetMode )
     window.addEventListener('click', (event)=> {
-        if(mode()== 'MOBILE'){
+        if(navmode()== 'MOBILE'){
             if(! bookDropdownButton[1].contains(event.target)){
                 return closeBooksDropdown();
             }
@@ -222,7 +282,7 @@
     })
     const openBooksDropdown = () => {
         console.log('OKEE')
-        if(mode() == 'MOBILE'){
+        if(navmode() == 'MOBILE'){
             bookDropdownContent[1].className = `max-h-[24rem] absolute top-14 left-0 z-20  bg-violet-700 divide-y divide-gray-100 rounded-lg shadow w-44 `
             isBooksDropdownMobileOpen = true;
     
@@ -238,7 +298,7 @@
         });
     }
     const closeBooksDropdown = () => {
-        if(mode() == 'MOBILE'){
+        if(navmode() == 'MOBILE'){
             bookDropdownContent[1].className = `max-h-[24rem] hidden absolute top-12 right-0 z-20  bg-violet-700 divide-y divide-gray-100 rounded-lg shadow w-44 `
             isBooksDropdownMobileOpen = false;
         }
@@ -252,23 +312,23 @@
     }
     
 
-    const pcSearchInput = document.getElementById('pc-search-input');
-    const pcSearchAnswerBtn = document.getElementById('pc-search-answer');
-    const mobileSearchInput = document.getElementById('mobile-search-input');
-    const mobileSearchAnswerBtn = document.getElementById('mobile-search-answer');
+    const spcSearchInput = document.getElementById('pc-search-input');
+    const spcSearchAnswerBtn = document.getElementById('pc-search-answer');
+    const smobileSearchInput = document.getElementById('mobile-search-input');
+    const smobileSearchAnswerBtn = document.getElementById('mobile-search-answer');
 
     let searchTextInput = '';
-    mobileSearchInput.addEventListener('input', (event) => {
+    smobileSearchInput.addEventListener('input', (event) => {
         console.log('TERJADI SESUATUUU')
         searchTextInput = event.target.value;
-        pcSearchInput.value = searchTextInput;
+        spcSearchInput.value = searchTextInput;
         });
-    pcSearchInput.addEventListener('input', (event) => {
+    spcSearchInput.addEventListener('input', (event) => {
         searchTextInput = event.target.value;
         mobileSearchInput.value = searchTextInput;
         });
 
-    const validateSearch = () => {
+    const svalidateSearch = () => {
         if(searchTextInput.trim() == ''){
             return Toastify({
                 text: "Maaf teks pencarian masih kosong",
@@ -285,14 +345,48 @@
         window.location.href = searchUrl;
     }
 
-    pcSearchAnswerBtn.addEventListener('click', ()=> {
-        validateSearch()
+    spcSearchAnswerBtn.addEventListener('click', ()=> {
+        svalidateSearch()
     })
-    mobileSearchAnswerBtn.addEventListener('click', ()=> {
-        validateSearch()
+    smobileSearchAnswerBtn.addEventListener('click', ()=> {
+        svalidateSearch()
     })
 
+   
+
     window.addEventListener('load', async ()=> {
+        const userDropdownButton = document.getElementById("user-dropdown-button");
+        const userDropdownMenu = userDropdownButton.nextElementSibling;
+       
+
+        userDropdownButton.addEventListener("click", function () {
+            console.log('HEllO pujangga')
+            if (userDropdownMenu.classList.contains("hidden")) {
+            userDropdownMenu.classList.remove("hidden");
+            userDropdownButton.setAttribute("aria-expanded", "true");
+            } else {
+            userDropdownMenu.classList.add("hidden");
+            userDropdownButton.setAttribute("aria-expanded", "false");
+            }
+        });
+
+        
+
+
+
+        document.addEventListener("click", function (event) {
+            if (!userDropdownButton.contains(event.target)) {
+                // Klik diluar dropdown, tutup dropdown jika dibuka
+               try {
+                userDropdownMenu.classList.add("hidden");
+                userDropdownButton.setAttribute("aria-expanded", "false");
+               } catch (error) {
+                
+               }
+            }
+
+            });
+
         await fetchCategory();
         establishBooksDropdownColor();
         

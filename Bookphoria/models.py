@@ -13,7 +13,7 @@ class UserProfile(models.Model):
     country = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=255, blank=True)
     age = models.PositiveIntegerField(blank=True, null=True)
-    profile_picture = models.TextField( blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True) 
     password = models.CharField(max_length = 255, blank=False, null =False)
 
@@ -31,6 +31,7 @@ class UserProfile(models.Model):
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
+        profile_picture = forms.ImageField(required=False)
         model = UserProfile
         fields =  ['username',  'fullname', 'password','profile_picture', 'age','phone_number',  'country', 'city' ]
 

@@ -4,25 +4,36 @@
         event.stopPropagation();
         " class="flex flex-col bg-[#240A48] h-full w-[70%] max-w-[24rem] text-white text-base">
         <div class=" relative flex flex-col rounded-b-full  px-4 py-8" >
-            <img src="{% static 'img/books.jpg' %}" class="opacity-10 absolute top-0 left-0 w-full h-full rounded-b-full"/>
-            <h1 class=" z-10 px-4 mt-6 mb-2  text-indigo-600 font-bold  text-center">Untuk pengalaman menjelajahi dunia buku lebih baik</h1>
-        <div class="z-10 flex w-full mb-6 justify-center space-x-4 px-4 text-white items-center">
-            <button class="px-3 py-1 rounded-sm bg-indigo-600 text-base">Login</button>
-            <h1 class="text-sm font-light ">Atau</h1>
-            <button class="px-3 py-1 rounded-sm bg-indigo-600 text-base">Register</button>
+          <img src="{% static 'img/books.jpg' %}" class="opacity-10 absolute top-0 left-0 w-full h-full rounded-b-full"/>
+      {% if user.is_authenticated %}
+      <div class="w-full flex items-center justify-center max-h-[12rem]">
+        <div class="flex items-center justify-center w-ful h-full rounded-full mx-auto bg-gray-300">
+          <img class="object-cover max-w-full max-h-full rounded-full" src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture }}{% else %}{{ 'https://firebasestorage.googleapis.com/v0/b/isa-citra-1691878861005.appspot.com/o/user.png?alt=media&token=17f4203b-30ef-4b57-8c32-58444eb49d58&_gl=1*8awca9*_ga*MTg2NjAwNDg1My4xNjg3NzcyODQ3*_ga_CW55HF8NVT*MTY5ODU2OTQ4NC4xMTcuMS4xNjk4NTY5NTY4LjM2LjAuMA..' }}{% endif %}" alt="">
         </div>
-        </div>
+      </div>
+      <div class="flex w-full justify-center mt-4 px-6">
+        <h1 class="text-xl line-clamp-1 text-white"> {{user.username}}</h1>
+      </div>
+      {% else %}
+      <h1 class=" z-10 px-4 mt-6 mb-2  text-indigo-600 font-bold  text-center">Untuk pengalaman menjelajahi dunia buku lebih baik</h1>
+      <div class="z-10 flex w-full mb-6 justify-center space-x-4 px-4 text-white items-center">
+          <a href="/login/"><button class="px-3 py-1 rounded-sm bg-indigo-600 text-base">Login</button></a>
+          <h1 class="text-sm font-light ">Atau</h1>
+          <a href="/register/"><button class="px-3 py-1 rounded-sm bg-indigo-600 text-base">Register</button></a>
+      </div>
+      {% endif %}
+      </div>
         <div class="w-full bg-opacity-20 mt-12 px-2 py-3 text-white flex  mx-auto max-w-[90%] bg-indigo-900 text-base rounded-md">
           <h1 class="mx-auto">Home</h1>
         </div>
         <div class="w-full bg-opacity-20 mt-3 px-2 py-3 text-white flex  mx-auto max-w-[90%] bg-indigo-900 text-base rounded-md">
-            <h1 class="mx-auto">All Books</h1>
+            <a href="/all-books/" class="mx-auto">All Books</a>
           </div>
           <div class="w-full bg-opacity-20 mt-3 px-2 py-3 text-white flex  mx-auto max-w-[90%] bg-indigo-900 text-base rounded-md">
-            <h1 class="mx-auto">Dashboard</h1>
+            <a href="/profile/" class="mx-auto">Dashboard</a>
           </div>
           <div class="w-full bg-opacity-20 mt-3 px-2 py-3 text-white flex  mx-auto max-w-[90%] bg-indigo-900 text-base rounded-md">
-            <h1 class="mx-auto">Account</h1>
+            <h1 href="/view/" class="mx-auto">Account</h1>
           </div>
     </div>
 </div>

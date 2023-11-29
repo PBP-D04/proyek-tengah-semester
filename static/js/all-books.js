@@ -7,11 +7,12 @@ var categoryMap = new Map();
 var currentSearchCategory = 'All';
 var isBooksDropdownOpen = false;
 var isBooksDropdownMobileOpen = false;
+let userId = document.getElementById('user-id').getAttribute('data-user-id')??'';
+let username = document.getElementById('user-username').getAttribute('data-user-username');
 let startX = 0;
 let endX = 0;
 const NO_THUMBNAIL_URL = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/495px-No-Image-Placeholder.svg.png?20200912122019'
 const bookDropdownButton = document.querySelectorAll(".dropdown-button-xl");
-//document.getElementsByClassName()
 const bookDropdownContent = document.querySelectorAll(".books-dropdown-content");
 const bookDropdownValues = document.querySelectorAll(".books-dropdown-values");
 const currentBooksDropdownValuesElement = document.querySelectorAll(".books-dropdown-current-value");
@@ -25,6 +26,8 @@ const mobileSearchInput = document.getElementById('mobile-search-input');
 const mobileSearchAnswerBtn = document.getElementById('mobile-search-answer');
 
 let searchText = '';
+
+
 
 mobileSearchInput.addEventListener('input', (event) => {
     searchText = event.target.value;
@@ -254,7 +257,7 @@ const sortCategory = (books) => {
     categoryMap =  new Map([...categoryMap.entries()].sort((a, b) => b[1] - a[1]));
 }
 
-const setBooksPreference = () => {
+const setBooksPreference = (wrap=true) => {
     let books = currentBooks;
     const sortBy = currentPreferences.sortBy;
     const filterByMaturityRating = currentPreferences.maturity == 'ALL'? (maturityRating) => true :
@@ -319,7 +322,12 @@ const setBooksPreference = () => {
     })
     currentfilterBooks = [...books];
     console.log('ini buku yang anda minta-> ', books);
-    wrapperSetBooks(currentfilterBooks);
+    if(wrap){
+        wrapperSetBooks(currentfilterBooks);
+    }
+    else{
+        setBooks(currentfilterBooks)
+    }
     if(mode() != 'LARGE'){
         hideBookSidebar()
     }
@@ -491,6 +499,40 @@ const getBooks = async ()=>{
     }
 }
 
+const likeOrDislikeBook = async (idUser,bookId) => {
+    if(idUser  == '' || !idUser){
+        showError('Anda belum Login. Mohon Login dulu')
+        return
+    }
+    const url = '/like-book-json/'
+    console.log(userId,idUser,bookId)
+    data = {'userId': idUser, 'bookId':bookId}
+    const requestOptions = {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json', 
+            },
+            body: JSON.stringify(data), 
+        };
+    try {
+        const resJson = await fetch(url, requestOptions);
+        const res = await resJson.json()
+        if(res.book){
+            updateBooksState(res.book);
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const updateBooksState = (updatedBook) => {
+    const bookIndex = currentBooks.findIndex(book => book.id === updatedBook.id);
+    if(bookIndex != -1){
+        currentBooks[bookIndex] = updatedBook
+    }
+    setSelectedCategory(currentSelectedCategory, false)
+}
+
 const setBooks = (res) => {
     let booksString = '';
     try {
@@ -522,10 +564,10 @@ const setBooks = (res) => {
                         <img class="rounded-md h-[10rem] aspect-[3/4]" src=${book.thumbnail? book.thumbnail : NO_THUMBNAIL_URL } alt="">
                         <div class=" pl-3 flex-1 flex flex-col min-h-full ">
                             <div class="flex  justify-between items-start ">
-                            <div class="mt-1 mr-2">
-                            
-                            <a class="font-bold text-sm line-clamp-2 text-[#460C90]" href="/detail/book-detail/${book.id}">${ book.title ? book.title : 'No Title' }</a>
-                            
+                            <div class="mt-1 mr-2">               
+                        
+                            <a class="font-bold text-sm line-clamp-2 text-[#460C90]" href="detail/book-detail/${book.id}">${ book.title ? book.title : 'No Title' }</a>
+                                
                             <h1 class="text-gray-400 text-xs line-clamp-2">
                             ${book.authors.length > 0 ? book.authors.map((author,index)=>{
                                 if(index == book.authors.length - 1){
@@ -537,14 +579,14 @@ const setBooks = (res) => {
                         </div>  
                                 
                                 <div class="ml-auto flex flex-col items-center justify-center">
-                                    <div class=" fas fa-heart text-red-500 text-lg">
+                                    <div onclick="likeOrDislikeBook(${userId?? ''},${book.id})" class="fas fa-heart ${book.likes.find((user)=> user.userId == userId)? 'text-red-500':'text-gray-300'} text-lg">
                                     </div>
-                                    <h1 class="text-xs">1024</h1>
+                                    <h1 class="text-xs">${book.likes.length}</h1>
                                 </div>
                             </div>
                             
                             <div class="text-xs text-gray-400 mt-1">
-                                Created by <span class="text-[#460C90]">Isa Citra</span>
+                            Created by <a href="/profile/${book.username??''}" class="text-[#460C90] hover:underline">${book.fullname? book.fullname :'Unknown'}</a>
                             </div>
                             <div class="mt-1 flex items-center space-x-2">
                                 <div class="rating text-yellow-400 text-sm">
@@ -561,9 +603,9 @@ const setBooks = (res) => {
                             <div  class="mt-1 text-gray-400 text-xs line-clamp-2">
                                 ${book.categories.length > 0 ? book.categories.map((category,index)=>{
                                     if(index == book.categories.length - 1){
-                                        return `<a>${category}</a><span>.</span>`
+                                        return `<a class="hover:underline" href="/search-books/${category}">${category}</a><span>.</span>`
                                     }
-                                    return `<a>${category}</a><span>, </span>`
+                                    return `<a class="hover:underline" href="/search-books/${category}">${category}</a><span>, </span>`
                                 }) : 'No categories'}
                             </div>
                             <div  class="mt-2 text-[#C52A62] font-bold text-sm line-clamp-2">
@@ -574,7 +616,7 @@ const setBooks = (res) => {
                             </div>
                         </div>
                     </div>
-                    <div class="mt-auto border-b border-[#460C90] w-full opacity-20 ${isFirstLast? ' hidden ' : isSecondLast? `${res.length % 2 == 0? ` md:hidden ` :
+                    <div class="mt-auto border-b border-[#460C90] w-full opacity-20 ${isFirstLast? ' hidden ' : isSecondLast? `${res.length % 2 == 0? ` md:hidden ${res.length % 3? 'lg:flex' : ''} ` :
                      res.length % 3 == 0? ` lg:hidden `:' '}`: isThirdLast? `${res.length % 3 == 0? ` lg:hidden `: ``}` : ``}">
                     </div>
                     </div>
@@ -672,7 +714,7 @@ const addEventListenerToCategoryButton = (cmap) => {
     }
 }
 
-const setSelectedCategory = (category) => {
+const setSelectedCategory = (category, wrap=true ) => {
     const lastSelectedCategoryElement = document.getElementById(currentSelectedCategory+'-books-btn');
     const nextSelectedCategoryElement = document.getElementById(category+'-books-btn');
     
@@ -685,12 +727,14 @@ const setSelectedCategory = (category) => {
         nextSelectedCategoryElement.classList.add('border-black')
     }
     currentSelectedCategory = category;
-    setBooksPreference()
+    setBooksPreference(wrap)
     if(booksCardContainerHeader){
         booksCardContainerHeader.textContent = `${category} (${currentfilterBooks.length})`
     }
     console.log('hello')
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if(wrap){
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
     console.log('AKU PASTIKAN SET SELECTED CATEGORY AMAN')
 }
 

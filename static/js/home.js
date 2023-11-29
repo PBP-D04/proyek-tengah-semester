@@ -1,4 +1,6 @@
+//let currentUser = {{user|default:"null"}}
 var currentBooks = [];
+let carouselBooks = [];
 const carousel = document.getElementById("carousel");
 const prevButton = document.getElementById("prev");
 const nextButton = document.getElementById("next");
@@ -10,6 +12,12 @@ const dropdownContent = document.getElementById("dropdownDelay");
 const dropdownButtonsContent = dropdownContent.querySelectorAll("button");
 const dropdownIcon = document.getElementById("homeDropdownIcon");
 const homeContent = document.getElementById("homeContent");
+
+let userId = document.getElementById('user-id').getAttribute('data-user-id')??'';
+let username = document.getElementById('user-username').getAttribute('data-user-username');
+
+console.log(userId,username)
+
 const carouselButtonContainer = document.getElementById("carousel-button-container");
 const carouselContainer = document.getElementById("carousel-container");
 const topDivider = document.getElementById('top-divider');
@@ -26,10 +34,10 @@ let sCurrentSearchCategory = 'All'
 let mode = (width) => width < 768 ? 'MOBILE' : width < 1024? 'MEDIUM' : 'LARGE';
 let prevWidth = window.innerWidth;
 
-const pcSearchInput = document.getElementById('pc-search-input');
-const pcSearchAnswerBtn = document.getElementById('pc-search-answer');
-const mobileSearchInput = document.getElementById('mobile-search-input');
-const mobileSearchAnswerBtn = document.getElementById('mobile-search-answer');
+let pcSearchInput = document.getElementById('pc-search-input');
+let pcSearchAnswerBtn = document.getElementById('pc-search-answer');
+let mobileSearchInput = document.getElementById('mobile-search-input');
+let mobileSearchAnswerBtn = document.getElementById('mobile-search-answer');
 let searchText = '';
 mobileSearchInput.addEventListener('input', (event) => {
     searchText = event.target.value;
@@ -205,6 +213,9 @@ const openSearchDropdown = () => {
 
 // tutup
 const closeSearchDropdown = () => {
+    if(searchDropdownContent.length == 0){
+        return
+    }
     console.log('INFOKAN KETERTUTUPAN')
     const currentMode = mode(window.innerWidth)
     if(currentMode == 'MOBILE' || currentMode == 'MEDIUM'){
@@ -232,30 +243,30 @@ const setMode = () => {
         isSearchDropdownMobileOpen = false;
     }
 }
-window.addEventListener('resize',setMode)
+//window.addEventListener('resize',setMode)
 
-window.addEventListener('click', (event)=> {
-    console.log('ADA YANG TERCLICK')
-    const currentWidth = window.innerWidth;
-    const currentMode = mode(currentWidth)
-    if(currentMode == 'MOBILE' || currentMode =='MEDIUM'){
-        console.log('MOBILE TERCLICK')
-        if(! searchDropdownButton[1].contains(event.target)){
-            console.log('MAAF AKU INTERUPSI!!!')
-            return closeSearchDropdown()
-        }
-        if( searchDropdownButton[1].contains(event.target)){
-            console.log('TERCLICK YOIIII')
-        }
+//window.addEventListener('click', (event)=> {
+  //  console.log('ADA YANG TERCLICK')
+    //const currentWidth = window.innerWidth;
+    //const currentMode = mode(currentWidth)
+    //if(currentMode == 'MOBILE' || currentMode =='MEDIUM'){
+      //  console.log('MOBILE TERCLICK')
+        //if(! searchDropdownButton[1].contains(event.target)){
+         //   console.log('MAAF AKU INTERUPSI!!!')
+           // return closeSearchDropdown()
+       // }
+        //if( searchDropdownButton[1].contains(event.target)){
+          //  console.log('TERCLICK YOIIII')
+      //  }
         
-    }
-    else{
-        console.log('PC TERCLICK')
-        if(! searchDropdownButton[0].contains(event.target)){
-            return closeSearchDropdown();
-        }
-    }
-});
+    //}
+    //else{
+       // console.log('PC TERCLICK')
+      //  if(! searchDropdownButton[0].contains(event.target)){
+         //   return closeSearchDropdown();
+    //    }
+  //  }
+//});
 
 const sortCategory = (books) => {
     categoryMap = new Map()
@@ -431,8 +442,59 @@ function getRandomElementsFromArray(array, numElements) {
     return shuffledArray.slice(0, numElements); // Mengambil sejumlah elemen
   }
 
+  const showError = (message) => {
+    return Toastify({
+        text: message,
+        duration: 3000, // Durasi tampilan toast (dalam milidetik)
+        style: {
+          background: 'red', // Warna latar belakang untuk pesan sukses
+          color: 'white', // Warna teks untuk pesan sukses
+        },
+        close:true
+      }).showToast();
+}
+
+const likeOrDislikeBook = async (idUser,bookId) => {
+    if(idUser == ''){
+        showError('Anda belum Login. Mohon Login dulu')
+        return
+    }
+    const url = '/like-book-json/'
+    console.log(userId,idUser,bookId)
+    data = {'userId': idUser, 'bookId':bookId}
+    const requestOptions = {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json', 
+            },
+            body: JSON.stringify(data), 
+        };
+    try {
+        const resJson = await fetch(url, requestOptions);
+        const res = await resJson.json()
+        if(res.book){
+            updateBooksState(res.book);
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const updateBooksState = (updatedBook) => {
+    const bookIndex = currentBooks.findIndex(book => book.id === updatedBook.id);
+    const carouselIndex = carouselBooks.findIndex(book=> book.id === updatedBook.id )
+    if(bookIndex != -1){
+        currentBooks[bookIndex] = updatedBook
+    }
+    if(carouselIndex!= -1){
+        carouselBooks[carouselIndex] = updatedBook
+    }
+    setHomepageBooks(currentBooks)
+    setCarouselBooks(carouselBooks)
+}
+
 const setCarouselBooks = (res) => {
-    
+    carouselBooks = res
     const carousel = document.getElementById('carousel');
     let booksString = '';
     try {
@@ -440,7 +502,6 @@ const setCarouselBooks = (res) => {
             carouselContainer.classList.add('hidden');
             return;
         }
-        console.log("HALOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
         res.forEach((book, index)=>{
             console.log(book)
             console.log(index)
@@ -464,13 +525,13 @@ const setCarouselBooks = (res) => {
                         </h1>
                     </div> 
                             <div class="ml-auto flex flex-col items-center justify-center">
-                                <div class=" fas fa-heart text-red-500 text-lg">
+                                <div onclick="likeOrDislikeBook(${userId},${book.id})" class=" fas fa-heart ${book.likes.find((user)=> user.userId == userId)? 'text-red-500':'text-gray-300'} text-lg">
                                 </div>
-                                <h1 class="text-xs">1024</h1>
+                                <h1 class="text-xs">${book.likes.length}</h1>
                             </div>
                         </div>
                         <div class="text-xs text-black mt-1 line-clamp-1">
-                            Created by <span class="text-[#460C90]">Isa Citra</span>
+                            Created by <a href="/profile/${book.username??''}" class="text-[#460C90] hover:underline">${book.fullname? book.fullname :'Unknown'}</a>
                         </div>
                         <div class="mt-1 flex items-center space-x-2">
                             <div class="rating text-yellow-400 text-sm">
@@ -487,9 +548,9 @@ const setCarouselBooks = (res) => {
                         <div  class="mt-1 text-[#C52A62] text-xs line-clamp-2">
                         ${book.categories.length > 0 ? book.categories.map((category,index)=>{
                             if(index == book.categories.length - 1){
-                                return `<a>${category}</a><span>.</span>`
+                                return `<a class="hover:underline" href="/search-books/${category}" >${category}</a><span>.</span>`
                             }
-                            return `<a>${category}</a><span>, </span>`
+                            return `<a class="hover:underline" href="/search-books/${category}">${category}</a><span>, </span>`
                         }) : 'No categories'}
                         </div>
                         <div  class=" text-black text-xs md:text-sm line-clamp-2 md:line-clamp-4">
@@ -498,7 +559,7 @@ const setCarouselBooks = (res) => {
                         <div  class="mt-1 text-[#C52A62] font-bold text-sm line-clamp-2">
                         ${book.currencyCode && book.price? `${book.currencyCode} <span>${book.price}</span>` : 'FREE'}
                         </div>
-                        <a href="detail/book-detail/${book.id}" class="mt-auto w-full max-w-[16rem] flex items-center justify-center text-sm md:text-base text-white py-2 rounded-md bg-violet-950 hover:bg-indigo-950">
+                        <a href="detail/book-detail/${book.id}" class="mt-auto w-full max-w-[16rem] flex items-center justify-center text-xs md:text-sm lg:text-base text-white py-2 rounded-md bg-violet-950 hover:bg-indigo-950">
                             Lihat Detail Buku
                         </a>
 
@@ -619,14 +680,14 @@ const setHomepageBooks = (prevRes) => {
                         </div>  
                                 
                                 <div class="ml-auto flex flex-col items-center justify-center">
-                                    <div class=" fas fa-heart text-red-500 text-lg">
+                                    <div onclick="likeOrDislikeBook(${userId??''},${book.id})" class="fas fa-heart ${book.likes.find((user)=> user.userId == userId)? 'text-red-500':'text-gray-300'} text-lg">
                                     </div>
-                                    <h1 class="text-xs">1024</h1>
+                                    <h1 class="text-xs">${book.likes.length}</h1>
                                 </div>
                             </div>
                             
                             <div class="text-xs text-gray-400 mt-1">
-                                Created by <span class="text-[#460C90]">Isa Citra</span>
+                            Created by <a href="/profile/${book.username??''}" class="text-[#460C90] hover:underline">${book.fullname? book.fullname :'Unknown'}</a>
                             </div>
                             <div class="mt-1 flex items-center space-x-2">
                                 <div class="rating text-yellow-400 text-sm">
@@ -643,9 +704,9 @@ const setHomepageBooks = (prevRes) => {
                             <div  class="mt-1 text-gray-400 text-xs line-clamp-2">
                                 ${book.categories.length > 0 ? book.categories.map((category,index)=>{
                                     if(index == book.categories.length - 1){
-                                        return `<a>${category}</a><span>.</span>`
+                                        return `<a class="hover:underline" href="/search-books/${category}">${category}</a><span>.</span>`
                                     }
-                                    return `<a>${category}</a><span>, </span>`
+                                    return `<a class="hover:underline" href="/search-books/${category}">${category}</a><span>, </span>`
                                 }) : 'No categories'}
                             </div>
                             <div  class="mt-2 text-[#C52A62] font-bold text-sm line-clamp-2">
@@ -656,7 +717,7 @@ const setHomepageBooks = (prevRes) => {
                             </div>
                         </div>
                     </div>
-                    <div class="mt-auto border-b border-[#460C90] w-full opacity-20 ${isFirstLast? ' hidden ' : isSecondLast? `${res.length % 2 == 0? ` md:hidden ` :
+                    <div class="mt-auto border-b border-[#460C90] w-full opacity-20 ${isFirstLast? ' hidden ' : isSecondLast? `${res.length % 2 == 0? ` md:hidden ${res.length % 3? 'lg:flex' : ''} ` :
                      res.length % 3 == 0? ` lg:hidden `:' '}`: isThirdLast? `${res.length % 3 == 0? ` lg:hidden `: ``}` : ``}">
                     </div>
                     </div>

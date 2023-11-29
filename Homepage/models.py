@@ -23,7 +23,7 @@ class Category(models.Model):
         return self.name
 
 class Book(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
     title = models.CharField(max_length=255, blank=False, null=False)
     subtitle = models.CharField(max_length=255, blank=True, null=True )
     description = models.TextField(blank=True, null=True)
@@ -49,6 +49,7 @@ class Book(models.Model):
     )
     user_publish_time = models.DateTimeField(blank=True, null=True, default= timezone.now)
     user_last_edit_time = models.DateTimeField(blank=True, null=True)
+    likes = models.ManyToManyField(User, related_name='likes_book')
 
     @classmethod
     def create_from_json(cls, book_json, user_id):

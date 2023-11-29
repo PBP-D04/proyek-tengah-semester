@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
-from Bookphoria.views import register, get_previous_edit_data_json, edit_profilejson
+from Bookphoria.views import register, get_previous_edit_data_json, edit_profilejson, register_user_mobile
 from Bookphoria.views import login_user , login_user_mobile
 from Bookphoria.views import logout_user
 from django.urls import path
@@ -29,6 +29,7 @@ urlpatterns = [
     path('login/', login_user, name='login'),
     path('login-flutter/',login_user_mobile ),
     path('register/', register, name='register'),
+    path('register-flutter/', register_user_mobile, name='register_user_mobile'),
     path('logout/', logout_user, name='logout'),
     path('review_list/', views.review_list, name='review_list'),
     #path('add_review/<int:product_id>/', views.add_review, name='add_review'),
