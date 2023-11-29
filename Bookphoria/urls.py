@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from Bookphoria.views import register, get_previous_edit_data_json, edit_profilejson
-from Bookphoria.views import login_user 
+from Bookphoria.views import login_user , login_user_mobile
 from Bookphoria.views import logout_user
 from django.urls import path
 from Bookphoria.models import Like
@@ -27,6 +27,7 @@ from Bookphoria import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', login_user, name='login'),
+    path('login-flutter/',login_user_mobile ),
     path('register/', register, name='register'),
     path('logout/', logout_user, name='logout'),
     path('review_list/', views.review_list, name='review_list'),

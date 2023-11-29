@@ -1,16 +1,22 @@
 from django.urls import path
-from .views import home, get_books_json, all_books_page,like_book, get_categories, search_category_page,search_page, search_books_json,search_books_json_category,advanced_search
+from .views import home,add_history,create_books_json,delete_all_history_from_user,delete_history,get_history, proxy_endpoint,get_books_json,like_or_dislike_book,get_books, all_books_page, get_categories, get_dummy_message, search_page, search_books_json,advanced_search
 app_name = 'Homepage'
 
 urlpatterns = [
     path('', home, name='home'),
-    path('get-books/', get_books_json, name='get-books' ),
+    path('proxy/<path:target_url>/', proxy_endpoint),
+    path('get-books/', get_books, name='get-books' ),
+    path('get-books-json/', get_books_json),
     path('all-books/', all_books_page, name='all-books-page'),
-    path('search-books/<str:category>/', search_category_page, name='search-category-page'),
     path('search-books/<str:category>/<str:search_text>/', search_page, name='search-page'),
     path('search-books-json/<str:category>/<str:search_text>', search_books_json, name='search-books-json' ),
-    path('search-books-json/<str:category>/', search_books_json_category, name='search-book-json-category'),
     path('get-categories/', get_categories, name='get-categories'),
     path('advanced-search-json/', advanced_search, name='advanced-search'),
-    path('like-book-json/', like_book, name='like-book-json' )
+    path('dummy/', get_dummy_message),
+    path('update-like/', like_or_dislike_book),
+    path('search-history/add/',add_history ),
+    path('search-history/delete/',delete_history),
+    path('search-history/delete-all/',delete_all_history_from_user),
+    path('search-history/get/',get_history),
+    path('flutter-create-book/',create_books_json )
 ]
