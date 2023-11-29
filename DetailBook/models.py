@@ -25,6 +25,7 @@ class CommentV2 (models.Model):
     
     def to_dict(self):
         return {
+        
             'username': self.user.username,
             'profile_picture': self.user.auth_user.profile_picture,
             'user_id':self.user.pk,
