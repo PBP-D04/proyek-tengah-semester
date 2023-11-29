@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import home,add_history,delete_all_history_from_user,delete_history,get_history, proxy_endpoint,get_books_json,like_or_dislike_book,get_books, all_books_page, get_categories, get_dummy_message, search_page, search_books_json,advanced_search
+from .views import home,add_history,create_books_json,delete_all_history_from_user,delete_history,get_history, proxy_endpoint,get_books_json,like_or_dislike_book,get_books, all_books_page, get_categories, get_dummy_message, search_page, search_books_json,advanced_search
 app_name = 'Homepage'
 
 urlpatterns = [
@@ -17,5 +17,6 @@ urlpatterns = [
     path('search-history/add/',add_history ),
     path('search-history/delete/',delete_history),
     path('search-history/delete-all/',delete_all_history_from_user),
-    path('search-history/get/',get_history)
+    path('search-history/get/',get_history),
+    path('flutter-create-book/',create_books_json )
 ]

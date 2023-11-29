@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 
 from Homepage.models import Book
-from .models import Review
+from .models import Review, ReviewV2
 from .forms import ReviewForm
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
@@ -12,9 +12,42 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import user_passes_test
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
+from pusher_function import realtime_update_review
 
+
+def coba_coba_review(request):
+    data = {
+        'user_id':1,
+        'book_id':80,
+        'rating':5,
+        'content': 'Buku ini sangat menarik untuk dibaca oleh semua kalangan',
+        'photo': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKazETeZCBVzGuEHvbfRheh5zg1Q38fp4blA&usqp=CAU'
+    }
+    review = ReviewV2.create_with_id(user_id=data['user_id'], rating= data['rating'],
+                            book_id=data['book_id'], content=data['content'], photo= data['photo'])
+    review_to_send = Review.objects.select_related('user__auth_user').get(pk=review.pk)
+    realtime_update_review(review=review_to_send.to_dict())
+    return JsonResponse({'message':'berhasil menambahkan review', 'status':200})
 
 # Create your views here.
+@csrf_exempt
+def add_review_flutter(request):
+    data = json.loads(request.body)
+    review = ReviewV2.create_with_id(user_id=data['user_id'], rating= data['rating'],
+                            book_id=data['book_id'], content=data['content'], photo= data['photo'])
+    review_to_send = Review.objects.select_related('user__auth_user').get(pk=review.pk)
+    realtime_update_review(review=review_to_send.to_dict())
+    return JsonResponse({'message':'berhasil menambahkan review', 'status':200})
+
+
+@csrf_exempt
+def get_review_flutter(request):
+    reviews = ReviewV2.objects.select_related('user__auth_user').all()
+    review_list = []
+    for review in reviews:
+        review_list.append(review.to_dict())
+    return JsonResponse({'reviews': review_list, 'status': 200})
+
 
 def home(request):
     return render(request, "home.html")

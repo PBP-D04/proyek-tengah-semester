@@ -269,6 +269,45 @@ def get_books_json(request):
     return JsonResponse({'book_list': book_list})
 
 @csrf_exempt
+def create_books_json(request):
+    data =json.loads(request.body)
+    book = Book.create_from_json(data, data['user']['id'])
+    book = Book.objects.prefetch_related('authors', 'images', 'categories', 'user_like', 'review_book__user__auth_user').select_related('user__auth_user').get(pk=book.pk)
+    book_data  = {
+            'review': [review.to_dict() for review in book.review_book.all()],
+            'user': book.user.auth_user.to_dict(),
+            'book': {
+                'id': book.pk,
+                'title': book.title,
+                'subtitle': book.subtitle,
+                'description': book.description,
+                'authors': [author.name for author in book.authors.all()],
+                'publisher': book.publisher,
+                'published_date': book.published_date.strftime('%Y-%m-%d') if book.published_date else None,
+                'language': book.language,
+                'currencyCode': book.currencyCode,
+                'is_ebook': book.is_ebook,
+                'pdf_available': book.pdf_available,
+                'pdf_link': book.pdf_link,
+                'thumbnail': book.thumbnail,
+                'categories': [category.name for category in book.categories.all()],
+                'images':[imageUrl.url for imageUrl in book.images.all()],
+                'price': book.price,
+                'saleability': book.saleability,
+                'buy_link': book.buy_link,
+                'epub_available': book.epub_available,
+                'epub_link': book.epub_link,
+                'maturity_rating': book.maturity_rating,
+                'page_count': book.page_count,
+                'user_publish_time': book.user_publish_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'book_likes':[like.to_dict() for like in book.user_like.all()]
+            }}
+    create_new_book(book_data=book_data)
+    return JsonResponse({'message':'berhasil membuat buku', 'status':200})
+
+    
+
+@csrf_exempt
 def get_history(request):
     data = json.loads(request.body)
     user_id = data['userId']

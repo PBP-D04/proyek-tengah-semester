@@ -17,4 +17,11 @@ async def dummy_check_is_ok():
 def update_book_like(user_id, book_id, is_liked):
     status_json = json.dumps({'user_id':user_id, 'book_id':book_id, 'is_liked':is_liked})
     pusher_client.trigger('bookphoria', 'like-book', {'message':status_json}) # nama channel, nama event, message
-    
+
+def create_new_book(book_data):
+    book_json =json.dumps(book_data)
+    pusher_client.trigger('bookphoria', 'new-book',{'message':book_json})  
+def realtime_update_comment(comment):
+    pusher_client.trigger('bookphoria', 'new-comment', {'message':comment})
+def realtime_update_review(review):
+    pusher_client.trigger('bookphoria', 'new-review', {'message':review})

@@ -2,12 +2,49 @@ import json
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 from DetailBook.forms import CommentForm
-from DetailBook.models import Comment
+from DetailBook.models import Comment, CommentV2
 from Homepage.models import Book, Category
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 import json
+from pusher_function import realtime_update_comment
+
+def coba_coba_komen(request):
+    data = {
+        'user_id':1,
+        'book_id':1,
+        'content':'Ada yang punya rekomendasi buku yang sama dengan ini?'
+    }
+    comment = CommentV2.create_with_id(user_id=data['user_id'],book_id=data['book_id'], content=data['content'])
+    commentToSend = CommentV2.objects.select_related('user__auth_user').get(pk=comment.pk)
+    realtime_update_comment(comment= commentToSend.to_dict())
+    return JsonResponse({
+        'status':200,
+        'message':'Berhasil menambahkan Komentar'
+    })
+
+@csrf_exempt
+def add_comment_v2(request):
+    data = json.loads(request.body)
+    comment = CommentV2.create_with_id(user_id=data['user_id'],book_id=data['book_id'], content=data['content'])
+    commentToSend = CommentV2.objects.select_related('user__auth_user').get(pk=comment.pk)
+    realtime_update_comment(comment= commentToSend.to_dict())
+    return JsonResponse({
+        'status':200,
+        'message':'Berhasil menambahkan Komentar'
+    })
+
+@csrf_exempt
+def get_all_comment_v2(request):
+    comments = CommentV2.objects.select_related('user__auth_user').all()
+    commentList = []
+    for comment in comments:
+        commentList.append(comment.to_dict())
+    return JsonResponse({'commentList': commentList, 'status':200, })
+
+
+    
 
 def home(request):
     return render(request, "home.html")
