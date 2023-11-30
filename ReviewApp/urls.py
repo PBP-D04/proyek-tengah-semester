@@ -11,5 +11,5 @@ urlpatterns = [
     path('add-review-flutter/', add_review_flutter),
     path('get-review-flutter/', get_review_flutter),
     path('delete-review-flutter/', delete_review_flutter),
-    path('update-review-flutter/', delete_review_flutter)
+    path('update-review-flutter/', update_review_flutter)
 ]
