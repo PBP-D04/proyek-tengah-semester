@@ -12,7 +12,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import user_passes_test
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
-from pusher_function import realtime_update_review
+from pusher_function import realtime_update_review, realtime_delete_review
 
 
 def coba_coba_review(request):
@@ -29,16 +29,35 @@ def coba_coba_review(request):
     realtime_update_review(review=review_to_send.to_dict())
     return JsonResponse({'message':'berhasil menambahkan review', 'status':200})
 
+@csrf_exempt
+def update_review_flutter(request):
+    data = json.loads(request.body)
+    review = ReviewV2.objects.select_related('user__auth_user').get(pk=data['review_id'])
+    review.content = data['content']
+    review.rating = data['rating']
+    review.photo = data['photo']
+    review.save()
+    realtime_update_review(review=review.to_dict())
+    return JsonResponse({'message':'berhasil mengedit review', 'status':200})
+
 # Create your views here.
 @csrf_exempt
 def add_review_flutter(request):
     data = json.loads(request.body)
     review = ReviewV2.create_with_id(user_id=data['user_id'], rating= data['rating'],
                             book_id=data['book_id'], content=data['content'], photo= data['photo'])
-    review_to_send = Review.objects.select_related('user__auth_user').get(pk=review.pk)
+    review_to_send = ReviewV2.objects.select_related('user__auth_user').get(pk=review.pk)
     realtime_update_review(review=review_to_send.to_dict())
     return JsonResponse({'message':'berhasil menambahkan review', 'status':200})
 
+@csrf_exempt
+def delete_review_flutter(request):
+    data = json.loads(request.body)
+    reviewData = ReviewV2.objects.get(pk=data['review_id'])
+    idToDelete = reviewData.pk
+    reviewData.delete()
+    realtime_delete_review(idToDelete)
+    return JsonResponse({'message':'berhasil menambahkan review', 'status':200})
 
 @csrf_exempt
 def get_review_flutter(request):

@@ -300,11 +300,11 @@ def like_or_dislike_book(request):
 # UDAH PALING GACOR, PAKAI INI UNTUK AMBIL DATA BUKU DARI DJANGO
 @csrf_exempt
 def get_books_json(request):
-    books = Book.objects.prefetch_related('authors', 'images', 'categories', 'user_like', 'review_book__user__auth_user').select_related('user__auth_user').all()
+    books = Book.objects.prefetch_related('authors', 'images', 'categories', 'user_like', 'review_book_v2__user__auth_user').select_related('user__auth_user').all()
     book_list = []
     for book in books:
         book_data  = {
-            'review': [review.to_dict() for review in book.review_book.all()],
+            'review': [review.to_dict() for review in book.review_book_v2.all()],
             'user': book.user.auth_user.to_dict(),
             'book': {
                 'id': book.pk,

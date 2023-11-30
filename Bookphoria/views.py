@@ -43,15 +43,13 @@ def register(request):
         phone_number = request.POST['phone_number']
         password1 = request.POST['password1']
         password2 = request.POST['password2']#validasi password
+
         if password1 != password2:
             error_message = "Password yang dimasukkan tidak cocok. Silakan coba lagi."
             return form
         user = User.objects.create_user(username=username, password=password1)
         user.save()
-        if 'profile_picture' in request.FILES:
-                print('found it')
-                user.profile_picture= request.FILES['profile_picture']
-        user.save()
+        
         registered = True
         user_profile = UserProfile(user=user,fullname = fullname,profile_picture=profile_picture, username=username, age=age, country=country, city=city, phone_number=phone_number, password= password1)
         user_profile.save() 
@@ -98,21 +96,31 @@ def register_user_mobile(request):
             country = data.get('country')
             city = data.get('city')
             phone_number = data.get('phone_number')
-            password = data.get('password1')
-            password_confirm = data.get('password2') #validasi password
+            password = data.get('password')
+            password_confirm = data.get('password_confirm') 
+            print('password->')
+            print(password)
+            print('ULALAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') #validasi password
             if password != password_confirm:
                 error_message = "Password yang dimasukkan tidak cocok. Silakan coba lagi."
                 return JsonResponse({'message': error_message, 'status': 400})
             user = User.objects.create_user(username=username, password=password)
             user.save()
+            print('HOLY SHITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT JANGAN ERROR TTTTTTTTTTTTTTTTTT')
+            print(password)
            # if 'profile_picture' in request.FILES:
              #   print('found it')
              #   user.profile_picture=request.FILES['profile_picture']
          #   user.save()
-            user_profile = UserProfile(user=user,fullname=fullname,profile_picture=profile_picture, username=username, age=age, country=country, city=city, phone_number=phone_number, password= password)
+            user_profile = UserProfile(user=user,
+            fullname=fullname,profile_picture=profile_picture,
+            username=username, age=age, country=country, city=city, 
+            phone_number=phone_number, password= password)
             user_profile.save() 
+            print('HOLY SHITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT JANGAN ERROR 2 TTTTTTTTTTTTTTTTTT')
             return JsonResponse({'message': 'Your account has been successfully created!', 'status': 200})
         except json.JSONDecodeError as e:
+            print(e)
             return JsonResponse({'error': 'Invalid JSON format'}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
