@@ -32,12 +32,13 @@ def coba_coba_review(request):
 @csrf_exempt
 def update_review_flutter(request):
     data = json.loads(request.body)
-    review = ReviewV2.objects.select_related('user__auth_user').get(pk=data['review_id'])
+    review = ReviewV2.objects.get(pk=data['review_id'])
     review.content = data['content']
     review.rating = data['rating']
     review.photo = data['photo']
     review.save()
-    realtime_update_review(review=review.to_dict())
+    review_update =  ReviewV2.objects.select_related('user__auth_user').get(pk=data['review_id'])
+    realtime_update_review(review=review_update.to_dict())
     return JsonResponse({'message':'berhasil mengedit review', 'status':200})
 
 # Create your views here.
