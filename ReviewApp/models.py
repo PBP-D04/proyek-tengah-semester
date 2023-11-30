@@ -24,7 +24,7 @@ from Homepage.models import Book
 
 class ReviewV2(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE )
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='review_book_v2')
     content = models.TextField(blank=True, null=True)
     rating = models.IntegerField(default=5,
         validators=[MinValueValidator(0), MaxValueValidator(5)]
