@@ -32,7 +32,7 @@ class Book(models.Model):
     authors = models.ManyToManyField('Author', related_name='authors_book')  
     publisher = models.CharField(max_length=100, blank=True, null=True)
     published_date = models.DateField(blank=True, null=True)
-    language = models.CharField(max_length=10, default='ID')
+    language = models.CharField(max_length=10)
     currencyCode = models.CharField(max_length=10, blank=True, null=True)
     is_ebook = models.BooleanField()
     pdf_available = models.BooleanField()
@@ -45,7 +45,7 @@ class Book(models.Model):
     buy_link = models.URLField(blank=True, null=True)
     epub_available = models.BooleanField(default=False)
     epub_link = models.URLField(blank=True, null=True)
-    maturity_rating = models.CharField(max_length=25,default='NOT_MATURE')
+    maturity_rating = models.CharField(max_length=25)
     page_count = models.IntegerField(default=1,
         validators=[MinValueValidator(1)]
     )
@@ -68,7 +68,7 @@ class Book(models.Model):
             publisher=book_json['publisher'],
             published_date=datetime.strptime(book_json['published_date'], '%Y-%m-%dT%H:%M:%S.%f') if book_json['published_date'] else None,
             language=book_json['language'],
-            currencyCode=book_json['currency_code'],
+            currencyCode=book_json.get('currency_code', 'ID'),
             is_ebook=book_json['is_ebook'],
             pdf_available=book_json['pdf_available'],
             pdf_link=book_json.get('pdf_link'),
@@ -78,7 +78,7 @@ class Book(models.Model):
             buy_link=book_json.get('buy_link'),
             epub_available=book_json.get('epub_available', False),
             epub_link=book_json.get('epub_link'),
-            maturity_rating=book_json['maturity_rating'],
+            maturity_rating=book_json.get('maturity_rating', 'NOT_MATURE'),
             page_count=book_json['page_count'],
             # Tambahkan atribut lainnya dari JSON sesuai kebutuhan
         )
