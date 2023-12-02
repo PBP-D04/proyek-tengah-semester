@@ -1,6 +1,7 @@
 import json
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
+import pytz
 from .models import Book, Category, SearchHistory
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
@@ -10,7 +11,7 @@ import requests
 import urllib3
 from Bookphoria.models import Like
 from django.contrib.auth.models import User
-from datetime import datetime
+from datetime import datetime, timedelta
 
 @csrf_exempt
 def proxy_endpoint(request, target_url):
@@ -329,7 +330,7 @@ def get_books_json(request):
                 'epub_link': book.epub_link,
                 'maturity_rating': book.maturity_rating,
                 'page_count': book.page_count,
-                'user_publish_time': book.user_publish_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'user_publish_time': (book.user_publish_time).strftime('%Y-%m-%dT%H:%M:%SZ'),
                 'book_likes':[like.to_dict() for like in book.user_like.all()]
             }
         }
@@ -341,6 +342,7 @@ def get_books_json(request):
 def create_books_json(request):
     data =json.loads(request.body)
     book = Book.create_from_json(data, data['user']['id'])
+    
     book = Book.objects.prefetch_related('authors', 'images', 'categories', 'user_like', 'review_book__user__auth_user').select_related('user__auth_user').get(pk=book.pk)
     book_data  = {
             'review': [review.to_dict() for review in book.review_book.all()],

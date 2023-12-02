@@ -27,3 +27,5 @@ def realtime_update_review(review):
     pusher_client.trigger('bookphoria', 'new-review', {'message':review})
 def realtime_delete_review(idToDelete):
     pusher_client.trigger('bookphoria', 'delete-review', {'message': idToDelete})
+def realtime_delete_book(lst):
+    pusher_client.trigger('bookphoria', 'delete-book', {'message': lst})

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import get_profile, add_book, get_books_json, get_reviews_json, visit_profile
+from .views import get_profile, edit_book_flutter,create_book_flutter,add_book, get_books_json, get_reviews_json, visit_profile, create_random_book,delete_books
 app_name = 'Dashboard'
 
 urlpatterns = [
@@ -8,4 +8,8 @@ urlpatterns = [
     path('add-book/', add_book, name='add_book'),
     path('get-books/', get_books_json, name='get-books'),
     path('get-reviews/', get_reviews_json, name='get-reviews'),
+    path('create-random-book/', create_random_book),
+    path('delete-book/', delete_books),
+    path('create-book-flutter/', create_book_flutter),
+    path('edit-book-flutter/', edit_book_flutter)
 ]

@@ -1,7 +1,9 @@
+from datetime import timedelta
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
-from django.contrib.auth.models import User  # sesuaikan dengan variabel
+from django.contrib.auth.models import User
+import pytz  # sesuaikan dengan variabel
 from Homepage.models import Book
 
 
@@ -49,6 +51,7 @@ class ReviewV2(models.Model):
         return review
 
     def to_dict(self):
+        adjusted_time = self.date_added + timedelta(hours=7)
         return {
             'id': self.id,
             'user': self.user.auth_user.to_dict(),
@@ -56,7 +59,7 @@ class ReviewV2(models.Model):
             'content': self.content,
             'rating': self.rating,
             'photo_url': self.photo if self.photo else None,
-            'date_added': self.date_added.strftime('%Y-%m-%d') if self.date_added else None
+            'date_added': adjusted_time.strftime('%Y-%m-%d') if self.date_added else None
             # Tambahkan informasi lain dari model Review yang ingin Anda sertakan di sini
         }
     

@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from Bookphoria.models import Like
 import datetime
+import pytz
+from datetime import date,datetime,timedelta
 
 
 # Create your models here.
@@ -47,14 +49,19 @@ class Book(models.Model):
     page_count = models.IntegerField(default=1,
         validators=[MinValueValidator(1)]
     )
-    user_publish_time = models.DateTimeField(blank=True, null=True, default= timezone.now)
+    user_publish_time = models.DateTimeField(auto_now_add=True)
     user_last_edit_time = models.DateTimeField(blank=True, null=True)
     likes = models.ManyToManyField(User, related_name='likes_book')
 
     @classmethod
-    def create_from_json(cls, book_json, user_id):
+    def delete_from_json(cls, lst_json):
+        Book.objects.filter(id__in=lst_json['books']).delete()
+        return lst_json['books']
+
+    @classmethod
+    def create_from_json(cls, book_json):
         new_book = cls(
-            user_id=user_id,
+            user_id=book_json['user_id'],
             title=book_json['title'],
             subtitle=book_json['subtitle'],
             description=book_json['description'],
@@ -73,7 +80,6 @@ class Book(models.Model):
             epub_link=book_json.get('epub_link'),
             maturity_rating=book_json['maturity_rating'],
             page_count=book_json['page_count'],
-            user_publish_time=timezone.now(),
             # Tambahkan atribut lainnya dari JSON sesuai kebutuhan
         )
         new_book.save()
@@ -86,6 +92,10 @@ class Book(models.Model):
         for img_url in images:
             image = ImageUrl.objects.create(url=img_url)
             new_book.images.add(image)
+        categories_name = book_json.get('categories',[])
+        for category_name in categories_name:
+            category, created = Category.objects.get_or_create(name=category_name)
+            new_book.categories.add(category)
         return new_book
 
     def __str__(self):
@@ -96,7 +106,7 @@ class SearchHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     historyId = models.UUIDField()
     text = models.TextField()
-    time = models.TimeField()
+    time = models.DateTimeField()
 
     @classmethod
     def create_history_with_id(cls, user_id, history_id, text, time):
@@ -117,11 +127,12 @@ class SearchHistory(models.Model):
         return cls.objects.filter(user_id=user_id)
 
     def to_dict(self):
+        adjusted_time = self.time + timedelta(hours=7)
         return {
             'user_id': self.user_id,
             'history_id': str(self.historyId),
             'text': self.text,
-            'time': self.time.strftime("%Y-%m-%d %H:%M:%S") if self.time else None
+            'time': adjusted_time.strftime("%Y-%m-%d %H:%M:%S") if self.time else None
             # Tambahkan attribut lainnya jika diperlukan
         }
     

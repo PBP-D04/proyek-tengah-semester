@@ -1,7 +1,9 @@
+from datetime import timedelta
 from django.db import models
 from Homepage.models import Book
 from django.contrib.auth.models import User
 from Bookphoria.models import UserProfile
+import pytz
  
 class Comment(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='comments')
@@ -24,6 +26,7 @@ class CommentV2 (models.Model):
         return comment
     
     def to_dict(self):
+        adjusted_time = self.created_at + timedelta(hours=7)
         return {
         
             'username': self.user.username,
@@ -31,7 +34,7 @@ class CommentV2 (models.Model):
             'user_id':self.user.pk,
             'book': self.book.pk,
             'content': self.content,
-            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S')  # Formatting date as string
+            'created_at': adjusted_time.strftime('%Y-%m-%d %H:%M:%S')# Formatting date as string
         }
 
     
