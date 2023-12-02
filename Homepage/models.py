@@ -32,7 +32,7 @@ class Book(models.Model):
     authors = models.ManyToManyField('Author', related_name='authors_book')  
     publisher = models.CharField(max_length=100, blank=True, null=True)
     published_date = models.DateField(blank=True, null=True)
-    language = models.CharField(max_length=10)
+    language = models.CharField(max_length=10, default='ID')
     currencyCode = models.CharField(max_length=10, blank=True, null=True)
     is_ebook = models.BooleanField()
     pdf_available = models.BooleanField()
@@ -45,7 +45,7 @@ class Book(models.Model):
     buy_link = models.URLField(blank=True, null=True)
     epub_available = models.BooleanField(default=False)
     epub_link = models.URLField(blank=True, null=True)
-    maturity_rating = models.CharField(max_length=25)
+    maturity_rating = models.CharField(max_length=25,default='NOT_MATURE')
     page_count = models.IntegerField(default=1,
         validators=[MinValueValidator(1)]
     )
