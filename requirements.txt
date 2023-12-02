@@ -9,3 +9,5 @@ Pillow
 pusher
 asyncio
 django-cors-headers
+Faker
+pytz
