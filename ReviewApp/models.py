@@ -73,17 +73,17 @@ class Review(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(5)]
     )
     photo = models.ImageField(upload_to='review_photos/', blank=True, null=True)
-    date_added = models.DateField(default=timezone.now)
+    date_added = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return str(self.id)
     def to_dict(self):
         return {
             'id': self.id,
             'user': self.user.auth_user.to_dict(),
-            'book_id': self.book.id,
+            'book_id': self.book.id,  
             'content': self.content,
             'rating': self.rating,
             'photo_url': self.photo.url if self.photo else None,
-            'date_added': self.date_added.strftime('%Y-%m-%d') if self.date_added else None
+            'date_added': self.date_added.strftime('%Y-%m-%d %H:%M:%S') if self.date_added else None
             # Tambahkan informasi lain dari model Review yang ingin Anda sertakan di sini
         }
