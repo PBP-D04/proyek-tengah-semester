@@ -232,11 +232,13 @@ def edit_profilejson(request):
         userProfilenew.country= data['country']
         userProfilenew.city = data['city']
         userProfilenew.phone_number= data ['phoneNumber']
-        userProfilenew.password = data['password']
-        userProfilenew.user.set_password(data['password'])
+        confirmPass = data['password']
+        if confirmPass != userProfilenew.password:
+            error_message = "Password yang dimasukkan tidak cocok. Silakan coba lagi."
+            return JsonResponse({'message': error_message, 'status': 400})
         userProfilenew.user.save()
         userProfilenew.save()
-        return HttpResponseRedirect(reverse('view_profile')) # Ganti 'profile' dengan URL profil pengguna
+        return JsonResponse({'message': 'Your account has been successfully updated!', 'status': 200})
 
 
 
