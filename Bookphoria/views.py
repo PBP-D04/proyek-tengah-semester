@@ -226,18 +226,18 @@ def edit_profilejson(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         userId = data['id']
-        userProfilenew = UserProfile.objects.get(pk=userId)
-        userProfilenew.fullname = data['fullname']
-        userProfilenew.age = data['age']
-        userProfilenew.country= data['country']
-        userProfilenew.city = data['city']
-        userProfilenew.phone_number= data ['phoneNumber']
+        userProfile = UserProfile.objects.get(pk=userId)
+        userProfile.fullname = data['fullname']
+        userProfile.age = data['age']
+        userProfile.country= data['country']
+        userProfile.city = data['city']
+        userProfile.phone_number= data ['phoneNumber']
         confirmPass = data['password']
-        if confirmPass != userProfilenew.password:
+        if confirmPass != userProfile.password:
             error_message = "Password yang dimasukkan tidak cocok. Silakan coba lagi."
             return JsonResponse(status=400, data={'message': error_message, 'status': 400})
-        userProfilenew.user.save()
-        userProfilenew.save()
+        userProfile.user.save()
+        userProfile.save()
         return JsonResponse(status=200, data={'message': 'Your account has been successfully updated!', 'status': 200})
     return JsonResponse(status=405, data={'error': 'Invalid request method'})
 
