@@ -239,7 +239,7 @@ def edit_profilejson(request):
         userProfilenew.user.save()
         userProfilenew.save()
         return JsonResponse(status=200, data={'message': 'Your account has been successfully updated!', 'status': 200})
-    return JsonResponse(status=405, data={'error': 'Invalid request method'}, status=405)
+    return JsonResponse(status=405, data={'error': 'Invalid request method'})
 
 
 
