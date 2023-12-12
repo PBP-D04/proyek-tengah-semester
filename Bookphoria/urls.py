@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from Bookphoria.views import register, get_previous_edit_data_json, edit_profilejson, register_user_mobile
-from Bookphoria.views import login_user , login_user_mobile
+from Bookphoria.views import login_user , login_user_mobile, get_profilejson
 from Bookphoria.views import logout_user
 from django.urls import path
 from Bookphoria.models import Like
@@ -39,6 +39,7 @@ urlpatterns = [
     path('edit_profile/', views.edit_profile, name='edit_profile'),
     path('edit_profile_data_json/',get_previous_edit_data_json, name="edit_data_json"),
     path('edit_profilejson/', edit_profilejson, name='edit_profilejson'),
+    path('get_profilejson/<int:id>/', get_profilejson, name='get_profilejson'),
     path('', include('Homepage.urls')),
     path('profile/', include('Dashboard.urls')),
     path('detail/', include('DetailBook.urls')), 
