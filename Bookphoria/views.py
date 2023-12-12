@@ -236,12 +236,14 @@ def edit_profilejson(request):
         if confirmPass != userProfile.password:
             error_message = "Password yang dimasukkan tidak cocok. Silakan coba lagi."
             return JsonResponse(status=400, data={'message': error_message, 'status': 400})
-        userProfile.user.save()
         userProfile.save()
         return JsonResponse(status=200, data={'message': 'Your account has been successfully updated!', 'status': 200})
     return JsonResponse(status=405, data={'error': 'Invalid request method'})
 
-
+@csrf_exempt
+def get_profilejson(request, id):
+    userProfile = UserProfile.objects.get(pk=id)
+    return JsonResponse(userProfile.to_dict())
 
 @csrf_exempt
 def get_previous_edit_data_json(request):
