@@ -233,6 +233,7 @@ def edit_profilejson(request):
         userProfile.city = data['city']
         userProfile.phone_number= data ['phoneNumber']
         confirmPass = data['password']
+        userProfile.profile_picture = data['profilePicture']
         if confirmPass != userProfile.password:
             error_message = "Password yang dimasukkan tidak cocok. Silakan coba lagi."
             return JsonResponse(status=400, data={'message': error_message, 'status': 400})
