@@ -22,7 +22,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 from ReviewApp.models import Review # connect to ReviewApp
 from django.core.files.storage import default_storage
-
+from pusher_function import realtime_update_profile
 
 import json
 
@@ -237,6 +237,7 @@ def edit_profilejson(request):
             error_message = "Password yang dimasukkan tidak cocok. Silakan coba lagi."
             return JsonResponse(status=400, data={'message': error_message, 'status': 400})
         userProfile.save()
+        realtime_update_profile(userData=userProfile.to_dict())
         return JsonResponse(status=200, data={'message': 'Your account has been successfully updated!', 'status': 200})
     return JsonResponse(status=405, data={'error': 'Invalid request method'})
 
