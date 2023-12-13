@@ -226,7 +226,7 @@ def edit_profilejson(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         userId = data['id']
-        userProfile = UserProfile.objects.get(pk=userId)
+        userProfile = UserProfile.objects.get(user__pk=userId)
         userProfile.fullname = data['fullname']
         userProfile.age = data['age']
         userProfile.country= data['country']
